@@ -16,7 +16,7 @@ from rich.align import Align
 from rich.text import Text
 
 
-def tampilkan_header_hot(title="🔥 Paket Hot 🔥"):
+def tampilkan_header_anu(title="✨ Paket Lainnya ✨"):
     header_text = Align.center(f"[{_c('text_title')}]{title}[/]")
     panel = Panel(
         header_text,
@@ -27,14 +27,14 @@ def tampilkan_header_hot(title="🔥 Paket Hot 🔥"):
     console.print(panel)
 
 
-def tampilkan_hot_packages(hot_packages):
+def tampilkan_anu_packages(anu_packages):
     table = Table(box=MINIMAL_DOUBLE_HEAD, expand=True)
     table.add_column("No", justify="right", style=_c("text_number"), width=4)
     table.add_column("Family", style=_c("text_body"))
     table.add_column("Variant", style=_c("text_body"))
     table.add_column("Option", style=_c("text_body"))
 
-    for idx, p in enumerate(hot_packages, 1):
+    for idx, p in enumerate(anu_packages, 1):
         table.add_row(str(idx), p["family_name"], p["variant_name"], p["option_name"])
 
     panel = Panel(
@@ -46,13 +46,13 @@ def tampilkan_hot_packages(hot_packages):
     console.print(panel)
 
 
-def tampilkan_hot2_packages(hot_packages):
+def tampilkan_anu2_packages(anu_packages):
     table = Table(box=MINIMAL_DOUBLE_HEAD, expand=True)
     table.add_column("No", justify="right", style=_c("text_number"), width=4)
     table.add_column("Nama Paket", style=_c("text_body"))
     table.add_column("Harga", style=_c("text_body"))
 
-    for idx, p in enumerate(hot_packages, 1):
+    for idx, p in enumerate(anu_packages, 1):
         table.add_row(str(idx), p["name"], str(p["price"]))
 
     panel = Panel(
@@ -64,7 +64,7 @@ def tampilkan_hot2_packages(hot_packages):
     console.print(panel)
 
 
-def tampilkan_menu_opsi_hot():
+def tampilkan_menu_opsi_anu():
     kode_text = Text("00", style=_c("text_number"))
     aksi_text = Text("Kembali ke menu utama", style=_c("text_err"))
     kombinasi_text = Text.assemble(kode_text, " ", aksi_text)
@@ -78,7 +78,7 @@ def tampilkan_menu_opsi_hot():
     console.print(panel)
 
 
-def tampilkan_info_hot2_package(selected_package):
+def tampilkan_info_anu2_package(selected_package):
     info_text = Text()
     info_text.append(f"Harga: {selected_package['price']}\n", style=_c("text_value"))
     info_text.append("Detail:\n", style=_c("text_body"))
@@ -116,35 +116,35 @@ def tampilkan_menu_metode_pembelian():
     console.print(panel)
 
 
-def show_hot_menu():
+def show_anu_menu():
     api_key = AuthInstance.api_key
     tokens = AuthInstance.get_active_tokens()
 
-    in_hot_menu = True
-    while in_hot_menu:
+    in_anu_menu = True
+    while in_anu_menu:
         clear_screen()
-        tampilkan_header_hot("🔥 Paket Hot 🔥")
+        tampilkan_header_anu("✨ Paket Lainnya ✨")
 
-        url = "https://me.mashu.lol/pg-hot.json"
+        url = "https://raw.githubusercontent.com/dratx1/engsel/refs/heads/main/family/anu.json"
         try:
             response = requests.get(url, timeout=30)
             response.raise_for_status()
-            hot_packages = response.json()
+            anu_packages = response.json()
         except Exception as e:
-            pesan_error(f"Gagal mengambil data hot package: {e}")
+            pesan_error(f"Gagal mengambil data anu package: {e}")
             pause()
             return
 
-        tampilkan_hot_packages(hot_packages)
-        tampilkan_menu_opsi_hot()
+        tampilkan_anu_packages(anu_packages)
+        tampilkan_menu_opsi_anu()
 
         choice = console.input(f"[{_c('text_sub')}]Pilih paket (nomor):[/{_c('text_sub')}] ").strip()
         if choice == "00":
-            in_hot_menu = False
+            in_anu_menu = False
             return
 
-        if choice.isdigit() and 1 <= int(choice) <= len(hot_packages):
-            selected_bm = hot_packages[int(choice) - 1]
+        if choice.isdigit() and 1 <= int(choice) <= len(anu_packages):
+            selected_bm = anu_packages[int(choice) - 1]
             family_code = selected_bm["family_code"]
             is_enterprise = selected_bm["is_enterprise"]
 
@@ -173,35 +173,35 @@ def show_hot_menu():
             pause()
 
 
-def show_hot_menu2():
+def show_anu_menu2():
     api_key = AuthInstance.api_key
     tokens = AuthInstance.get_active_tokens()
 
-    in_hot_menu = True
-    while in_hot_menu:
+    in_anu_menu = True
+    while in_anu_menu:
         clear_screen()
-        tampilkan_header_hot("🔥 Paket Hot 2 🔥")
+        tampilkan_header_anu("✨ Paket Lainnya 2 ✨")
 
-        url = "https://me.mashu.lol/pg-hot2.json"
+        url = "https://raw.githubusercontent.com/dratx1/engsel/refs/heads/main/family/anu2.json"
         try:
             response = requests.get(url, timeout=30)
             response.raise_for_status()
-            hot_packages = response.json()
+            anu_packages = response.json()
         except Exception as e:
-            pesan_error(f"Gagal mengambil data hot package: {e}")
+            pesan_error(f"Gagal mengambil data anu package: {e}")
             pause()
             return
 
-        tampilkan_hot2_packages(hot_packages)
-        tampilkan_menu_opsi_hot()
+        tampilkan_anu2_packages(anu_packages)
+        tampilkan_menu_opsi_anu()
 
         choice = console.input(f"[{_c('text_sub')}]Pilih paket (nomor):[/{_c('text_sub')}] ").strip()
         if choice == "00":
-            in_hot_menu = False
+            in_anu_menu = False
             return
 
-        if choice.isdigit() and 1 <= int(choice) <= len(hot_packages):
-            selected_package = hot_packages[int(choice) - 1]
+        if choice.isdigit() and 1 <= int(choice) <= len(anu_packages):
+            selected_package = anu_packages[int(choice) - 1]
             packages = selected_package.get("packages", [])
             if not packages:
                 pesan_error("Paket tidak tersedia.")
@@ -234,8 +234,8 @@ def show_hot_menu2():
                 )
 
             clear_screen()
-            tampilkan_header_hot(selected_package["name"])
-            tampilkan_info_hot2_package(selected_package)
+            tampilkan_header_anu(selected_package["name"])
+            tampilkan_info_anu2_package(selected_package)
             tampilkan_menu_metode_pembelian()
 
             in_payment_menu = True
@@ -245,12 +245,12 @@ def show_hot_menu2():
                     show_multipayment_v2(api_key, tokens, payment_items)
                     input("Tekan enter untuk kembali...")
                     in_payment_menu = False
-                    in_hot_menu = False
+                    in_anu_menu = False
                 elif input_method == "2":
                     show_qris_payment_v2(api_key, tokens, payment_items)
                     input("Tekan enter untuk kembali...")
                     in_payment_menu = False
-                    in_hot_menu = False
+                    in_anu_menu = False
                 elif input_method == "00":
                     in_payment_menu = False
                 else:

@@ -253,7 +253,6 @@ def get_balance(api_key: str, id_token: str) -> dict:
     
     print("Fetching balance...")
     res = send_api_request(api_key, path, raw_payload, id_token, "POST")
-    # print(f"[GB-256]:\n{json.dumps(res, indent=2)}")
     
     if "data" in res:
         if "balance" in res["data"]:
@@ -262,6 +261,42 @@ def get_balance(api_key: str, id_token: str) -> dict:
         print("Error getting balance:", res.get("error", "Unknown error"))
         return None
     
+def get_quota(api_key: str, id_token: str) -> dict | None:
+    """
+    Mengambil kuota utama pengguna.
+    api_key  : API key user
+    id_token : token aktif user
+    return   : dict quota {'remaining', 'total', 'has_unlimited'} atau None jika gagal
+    """
+    path = "api/v8/packages/quota-summary"
+    
+    payload = {
+        "is_enterprise": False,
+        "lang": "en"
+    }
+    
+    print("Fetching quota summary...")
+    try:
+        res = send_api_request(api_key, path, payload, id_token, "POST")
+    except Exception as e:
+        print("Error sending API request:", e)
+        return None
+
+    if isinstance(res, dict) and "data" in res:
+        quota = res["data"].get("quota", {}).get("data")
+        if quota:
+            return {
+                "remaining": quota.get("remaining", 0),
+                "total": quota.get("total", 0),
+                "has_unlimited": quota.get("has_unlimited", False)
+            }
+        else:
+            print("Quota data not found in response.")
+            return None
+    else:
+        print("Error getting quota:", res.get("error", "Unknown error") if isinstance(res, dict) else res)
+        return None
+
 def get_family(
     api_key: str,
     tokens: dict,
@@ -305,7 +340,7 @@ def get_families(api_key: str, tokens: dict, package_category_code: str) -> dict
         "package_category_code": package_category_code,
         "with_icon_url": True,
         "is_migration": False,
-        "lang": "en"
+        "lang": "id"
     }
     
     res = send_api_request(api_key, path, payload_dict, tokens["id_token"], "POST")
@@ -335,7 +370,7 @@ def get_package(
         "is_enterprise": False,
         "is_shareable": False,
         "is_migration": False,
-        "lang": "en",
+        "lang": "id",
         "package_option_code": package_option_code,
         "is_upsell_pdp": False,
         "package_variant_code": package_variant_code
@@ -495,7 +530,7 @@ def purchase_package(
         "payment_type": "PURCHASE",
         "is_enterprise": is_enterprise,
         "payment_target": payment_target,
-        "lang": "en",
+        "lang": "id",
         "is_referral": False,
         "token_confirmation": token_confirmation
     }
@@ -619,7 +654,7 @@ def get_package_details(
     api_key: str,
     tokens: dict,
     family_code: str,
-    variant_code: str,
+    variant_name: str,
     option_order: int,
     is_enterprise: bool,
     migration_type: str = "NONE"
@@ -634,14 +669,23 @@ def get_package_details(
     package_variants = family_data["package_variants"]
     option_code = None
     for variant in package_variants:
-        if variant["package_variant_code"] == variant_code:
-            selected_variant = variant
-            package_options = selected_variant["package_options"]
-            for option in package_options:
-                if option["order"] == option_order:
-                    selected_option = option
-                    option_code = selected_option["package_option_code"]
-                    break
+
+        # if clean_text(variant["name"]) == variant_name:
+        #     selected_variant = variant
+            
+        #     package_options = selected_variant["package_options"]
+        #     for option in package_options:
+        #         if option["order"] == option_order:
+        #             selected_option = option
+        #             option_code = selected_option["package_option_code"]
+        #             break
+        package_options.extend(variant["package_options"])
+    
+    for option in package_options:
+        if option["order"] == option_order:
+            selected_option = option
+            option_code = selected_option["package_option_code"]
+            break
 
     if option_code is None:
         print("Gagal menemukan opsi paket yang sesuai.")
