@@ -27,9 +27,11 @@ from app.menus.circle import show_circle_info
 from app.menus.notification import show_notification_menu
 from app.menus.store.segments import show_store_segments_menu
 from app.menus.store.search import show_family_list_menu, show_store_packages_menu
+from app.menus.family_grup import show_family_menu
+from app.menus.theme import show_theme_menu
+from app.menus.donate import show_donate_menu
 
 console = Console()
-WIDTH = 60
 
 def show_main_menu(profile):
     clear_screen()
@@ -56,12 +58,14 @@ def show_main_menu(profile):
         ("5", "📮 Beli Paket via Option Code"),
         ("6", "📁 Beli Paket via Family Code"),
         ("7", "🔁 Beli Semua Paket di Family Code"),
-        ("8", "📜 Riwayat Transaksi"),
+        ("8", "💾 Simpan/Kelola Family Code"),
         ("9", "👨‍👩‍👧‍👦 Family Plan / Akrab Organizer"),
         ("10", "🧬 Circle [WIP]"),
         ("11", "🏬 Store Segments"),
         ("12", "📚 Store Family List"),
         ("13", "🛍️ Store Packages"),
+        ("77", "💖 Dukung & Donasi untuk Developer"),
+        ("88", "🎨 Ganti Tema CLI"),
         ("N", "🔔 Notifikasi"),
         ("00", "⭐ Bookmark Paket"),
         ("99", "⛔ Tutup aplikasi"),
@@ -131,7 +135,7 @@ def main():
                 delay_seconds = int(Prompt.ask("Delay antar pembelian (detik)", default="0"))
                 purchase_by_family(family_code, use_decoy, pause_on_success, delay_seconds, start_from_option)
             elif choice == "8":
-                show_transaction_history(AuthInstance.api_key, active_user["tokens"])
+                show_family_menu()
             elif choice == "9":
                 show_family_info(AuthInstance.api_key, active_user["tokens"])
             elif choice == "10":
@@ -145,6 +149,10 @@ def main():
             elif choice == "13":
                 is_enterprise = Prompt.ask("Enterprise? (y/n)", default="n").lower() == 'y'
                 show_store_packages_menu(profile['subscription_type'], is_enterprise)
+            elif choice == "77":
+                show_donate_menu()
+            elif choice == "88":
+                show_theme_menu()
             elif choice == "00":
                 show_bookmark_menu()
             elif choice == "99":
