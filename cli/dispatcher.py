@@ -65,7 +65,7 @@ def dispatch(choice: str, ctx: dict):
             purchase_by_family(code, decoy, pause_each, delay, start)
 
         case "8":
-            show_family_menu()
+            show_transaction_history(ctx["api_key"], ctx["tokens"])
 
         case "9":
             show_family_info(ctx["api_key"], ctx["tokens"])
