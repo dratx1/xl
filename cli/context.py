@@ -1,9 +1,9 @@
 import time
 from datetime import datetime
+from rich.console import Console
 from app.service.auth import AuthInstance
 from app.client.engsel import get_balance, get_quota, get_profile
 from app.client.engsel2 import get_tiering_info, segments
-from rich.console import Console
 
 console = Console()
 _cached = None
@@ -28,21 +28,25 @@ def get_user_context(force=False):
     console.print("Fetching balance...")
     try:
         balance = get_balance(api_key, id_token)
+        if not balance:
+            raise ValueError("Balance kosong")
     except Exception as e:
-        console.print(f"[bold red]Error getting balance: {e}[/bold red]")
+        console.print(f"[bold red]❌ Gagal mengambil saldo: {e}[/bold red]")
         return None
 
     console.print("Fetching profile...")
     try:
         profile = get_profile(api_key, access_token, id_token)
         if not profile or "profile" not in profile:
-            console.print("[bold red]❌ Gagal mengambil profil pengguna.[/bold red]")
-            return None
+            raise ValueError("Profil tidak ditemukan")
     except Exception as e:
-        console.print(f"[bold red]Error getting profile: {e}[/bold red]")
+        console.print(f"[bold red]❌ Gagal mengambil profil: {e}[/bold red]")
         return None
 
+    console.print("Fetching quota...")
     quota = get_quota(api_key, id_token) or {}
+
+    console.print("Fetching tiering...")
     tiering = {}
     sub_type = profile["profile"].get("subscription_type", "-")
     if sub_type == "PREPAID":
@@ -51,6 +55,7 @@ def get_user_context(force=False):
         except Exception as e:
             console.print(f"[bold yellow]⚠️ Gagal mengambil tiering: {e}[/bold yellow]")
 
+    console.print("Fetching segments...")
     try:
         seg = segments(api_key, id_token, access_token, balance.get("remaining", 0)) or {}
     except Exception as e:
