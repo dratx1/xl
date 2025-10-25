@@ -41,6 +41,7 @@ console = Console()
 theme = get_theme()
 
 def show_main_menu(profile):
+    get_theme()
     expired_at_dt = datetime.fromtimestamp(profile["balance_expired_at"]).strftime("%Y-%m-%d")
     pulsa_str = get_rupiah(profile["balance"])
 
@@ -80,6 +81,7 @@ def show_main_menu(profile):
     console.print(Panel(menu, title=f"[{theme['text_title']}]📋 Menu Utama[/]", border_style=theme["border_primary"], padding=(0, 1), expand=True))
 
 def build_profile():
+    get_theme()
     active_user = AuthInstance.get_active_user()
     if not active_user:
         return None
@@ -105,6 +107,7 @@ def build_profile():
     }
 
 def main():
+    get_theme()
     while True:
         active_user = AuthInstance.get_active_user()
         if not active_user:
@@ -212,6 +215,7 @@ def main():
             print_panel("⚠️ Error", "Pilihan tidak valid.")
 
 if __name__ == "__main__":
+    get_theme()
     try:
         main()
     except KeyboardInterrupt:
