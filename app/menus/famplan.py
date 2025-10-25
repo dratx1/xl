@@ -29,7 +29,7 @@ def show_family_info(api_key: str, tokens: dict):
         info = family_detail["member_info"]
         plan_type = info.get("plan_type", "")
         if not plan_type:
-            print_panel("ℹ️ Info", "Anda bukan organizer Family Plan.")
+            print_panel("Info ℹ️", "Anda bukan organizer Family Plan.")
             pause()
             return
 
