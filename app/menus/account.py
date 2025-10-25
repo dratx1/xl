@@ -204,11 +204,6 @@ def show_account_menu():
                         print_panel("ℹ️ Info", "Penghapusan akun dibatalkan.")
                     pause()
                 else:
-                        print_panel("✅ Info", f"Akun {selected_user['number']} berhasil dihapus.")
-                    else:
-                        print_panel("ℹ️ Info", "Penghapusan akun dibatalkan.")
-                    pause()
-                else:
                     print_panel("⚠️ Error", "Nomor akun di luar jangkauan.")
                     pause()
             else:
