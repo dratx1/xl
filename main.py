@@ -59,7 +59,7 @@ def show_main_menu(profile):
     menu.add_column("Kode", style=theme["text_key"], justify="right", width=6)
     menu.add_column("Menu", style=theme["text_body"])
     menu.add_row("1", "🔐 Login/Ganti akun")
-    menu.add_row("2", "📃 Lihat Paket Saya")
+    menu.add_row("2", "📑 Lihat Paket Saya")
     menu.add_row("3", "🔥 Beli Paket Hot Promo")
     menu.add_row("4", "🔥 Beli Paket Hot Promo-2")
     menu.add_row("5", "💵 Beli Paket via Option Code")
