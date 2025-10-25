@@ -6,7 +6,7 @@ from rich.box import MINIMAL_DOUBLE_HEAD
 
 from app.client.engsel import get_otp, submit_otp
 from app.service.auth import AuthInstance
-from app.service.service import load_unlock_status, save_unlock_status
+from app.service.service import load_status, save_status
 from app.config.theme_config import get_theme
 from app.menus.util import pause
 from app.menus.util_helper import print_panel, clear_screen
@@ -71,7 +71,7 @@ def show_account_menu():
 
     border_set = 2
     name_set = "*6969#"
-    unlock_data = load_unlock_status()
+    unlock_data = load_status()
     is_unlocked = unlock_data.get("is_unlocked", False)
 
     in_account_menu = True
@@ -89,7 +89,7 @@ def show_account_menu():
                     pause()
                     add_user = False
                     continue
-                save_unlock_status(True)
+                save_status(True)
                 is_unlocked = True
                 print_panel("✅ Berhasil", "Akses akun tambahan telah dibuka.")
                 pause()
