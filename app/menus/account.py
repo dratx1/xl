@@ -12,7 +12,6 @@ from app.menus.util import pause
 from app.menus.util_helper import print_panel, clear_screen
 
 console = Console()
-theme = get_theme()
 
 def normalize_number(raw_input: str) -> str:
     raw_input = raw_input.strip().replace(" ", "").replace("-", "")
@@ -26,6 +25,7 @@ def normalize_number(raw_input: str) -> str:
 
 def login_prompt(api_key: str):
     clear_screen()
+    theme = get_theme()
     console.print(Panel("🔐 Login ke MyXL", border_style=theme["border_primary"], padding=(1, 2)))
     raw_input = console.input("Masukkan nomor XL (08xx / 628xx / +628xx): ").strip()
     phone_number = normalize_number(raw_input)
@@ -70,6 +70,7 @@ def login_prompt(api_key: str):
 
 def show_account_menu():
     clear_screen()
+    theme = get_theme()
     AuthInstance.load_tokens()
     users = AuthInstance.refresh_tokens
     active_user = AuthInstance.get_active_user()
@@ -84,6 +85,7 @@ def show_account_menu():
 
     while in_account_menu:
         clear_screen()
+        theme = get_theme()
 
         if active_user is None or add_user:
             if not is_unlocked and len(users) >= border_set:
@@ -212,7 +214,10 @@ def show_account_menu():
 
         elif input_str.isdigit() and 1 <= int(input_str) <= len(users):
             selected_user = users[int(input_str) - 1]
-            return selected_user["number"]
+            AuthInstance.set_active_user(selected_user["number"])
+            print_panel("✅ Info", f"Akun aktif sekarang: {selected_user['number']}")
+            pause()
+            continue
 
         else:
             print_panel("⚠️ Error", "Input tidak valid. Silakan coba lagi.")
