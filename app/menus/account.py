@@ -70,7 +70,7 @@ def show_account_menu():
     active_user = AuthInstance.get_active_user()
 
     border_set = 2
-    name_set = "*6969#"
+    name_set = "barbexid"
     unlock_data = load_status()
     is_unlocked = unlock_data.get("is_unlocked", False)
 
@@ -109,7 +109,7 @@ def show_account_menu():
             continue
 
         console.print(Panel(
-            Align.center("📱 Akun Tersimpan", vertical="middle"),
+            Align.center("👥 Akun Tersimpan", vertical="middle"),
             border_style=theme["border_info"],
             padding=(1, 2),
             expand=True
