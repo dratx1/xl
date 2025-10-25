@@ -123,7 +123,7 @@ def main():
         clear_screen()
         theme = get_theme()
         show_main_menu(profile)
-        choice = console.input(f"[{theme['text_sub']}]Pilih menu:[/{theme['text_sub']}] ").strip().lower()
+        choice = console.input(f"[{theme['text_sub']}]💥Pilih menu:[/{theme['text_sub']}] ").strip().lower()
 
         if choice == "1":
             selected_user_number = show_account_menu()
