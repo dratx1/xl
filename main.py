@@ -6,6 +6,7 @@ from datetime import datetime
 from rich.console import Console
 from rich.panel import Panel
 from rich.table import Table
+from rich.box import MINIMAL_DOUBLE_HEAD
 from app.menus.util import pause
 from app.menus.util_helper import (
     clear_screen,
@@ -52,9 +53,9 @@ def show_main_menu(profile):
     info_table.add_row(" Aktif", f": ⏳ [{theme['text_date']}]{expired_at_dt}[/{theme['text_date']}]")
     info_table.add_row(" Tiering", f": 🏅 [{theme['text_date']}]{profile['point_info']}[/{theme['text_date']}]")
 
-    console.print(Panel(info_table, title=f"[{theme['text_title']}]✨ Informasi Akun ✨[/]", border_style=theme["border_info"], padding=(1, 2), expand=True))
+    console.print(Panel(info_table, title=f"[{theme['text_title']}]✨Informasi Akun✨[/]", border_style=theme["border_info"], padding=(1, 2), expand=True))
 
-    menu = Table(show_header=False, box=None, expand=True)
+    menu = Table(show_header=False, box=MINIMAL_DOUBLE_HEAD, expand=True)
     menu.add_column("Kode", style=theme["text_key"], justify="right", width=6)
     menu.add_column("Menu", style=theme["text_body"])
     menu.add_row("1", "🔐 Login/Ganti akun")
