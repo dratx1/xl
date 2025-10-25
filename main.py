@@ -48,7 +48,7 @@ def show_main_menu(profile):
     info_table.add_column(justify="left", style=theme["text_body"])
     info_table.add_column(justify="left", style=theme["text_body"])
     info_table.add_row(" Nomor", f": 📞 [bold]{profile['number']}[/]")
-    info_table.add_row(" Type", f": 🧾 {profile['subscription_type']} ({profile['subscriber_id']})")
+    #info_table.add_row(" Type", f": 🧾 {profile['subscription_type']} ({profile['subscriber_id']})")
     info_table.add_row(" Pulsa", f": 💰 Rp [{theme['text_money']}]{pulsa_str}[/{theme['text_money']}]")
     info_table.add_row(" Aktif", f": ⏳ [{theme['text_date']}]{expired_at_dt}[/{theme['text_date']}]")
     #info_table.add_row(" Tiering", f": 🏅 [{theme['text_date']}]{profile['point_info']}[/{theme['text_date']}]")
@@ -86,7 +86,7 @@ def build_profile():
 
     balance = get_balance(AuthInstance.api_key, active_user["tokens"]["id_token"])
     profile_data = get_profile(AuthInstance.api_key, active_user["tokens"]["access_token"], active_user["tokens"]["id_token"])
-    sub_type = profile_data["profile"]["subscription_type"]
+    #sub_type = profile_data["profile"]["subscription_type"]
 
     #point_info = "Points: N/A | Tier: N/A"
     #if sub_type == "PREPAID":
