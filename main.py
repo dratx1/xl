@@ -18,7 +18,7 @@ from app.client.engsel import (
     get_profile,
     get_package,
 )
-from app.client.engsel2 import get_tiering_info
+#from app.client.engsel2 import get_tiering_info
 from app.menus.payment import show_transaction_history
 from app.service.auth import AuthInstance
 from app.menus.bookmark import show_bookmark_menu
@@ -88,12 +88,12 @@ def build_profile():
     profile_data = get_profile(AuthInstance.api_key, active_user["tokens"]["access_token"], active_user["tokens"]["id_token"])
     sub_type = profile_data["profile"]["subscription_type"]
 
-    point_info = "Points: N/A | Tier: N/A"
-    if sub_type == "PREPAID":
-        tiering_data = get_tiering_info(AuthInstance.api_key, active_user["tokens"])
-        tier = tiering_data.get("tier", 0)
-        current_point = tiering_data.get("current_point", 0)
-        point_info = f"Points: {current_point} | Tier: {tier}"
+    #point_info = "Points: N/A | Tier: N/A"
+    #if sub_type == "PREPAID":
+    #    tiering_data = get_tiering_info(AuthInstance.api_key, active_user["tokens"])
+    #    tier = tiering_data.get("tier", 0)
+    #    current_point = tiering_data.get("current_point", 0)
+    #    point_info = f"Points: {current_point} | Tier: {tier}"
 
     return {
         "number": active_user["number"],
@@ -101,7 +101,7 @@ def build_profile():
         "subscription_type": sub_type,
         "balance": balance.get("remaining"),
         "balance_expired_at": balance.get("expired_at"),
-        "point_info": point_info
+    #    "point_info": point_info
     }
 
 def main():
