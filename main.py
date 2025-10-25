@@ -98,7 +98,7 @@ def build_profile():
     return {
         "number": active_user["number"],
         "subscriber_id": profile_data["profile"]["subscriber_id"],
-        "subscription_type": sub_type,
+    #    "subscription_type": sub_type,
         "balance": balance.get("remaining"),
         "balance_expired_at": balance.get("expired_at"),
     #    "point_info": point_info
