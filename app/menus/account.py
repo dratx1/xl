@@ -1,55 +1,65 @@
 from app.client.engsel import get_otp, submit_otp
-from app.menus.util import clear_screen, pause
 from app.service.auth import AuthInstance
+from app.menus.util_helper import clear_screen, print_panel
+from rich.console import Console
+from rich.panel import Panel
+from rich.table import Table
+from app.config.theme_config import get_theme
 
-def show_login_menu():
-    clear_screen()
-    print("-------------------------------------------------------")
-    print("Login ke MyXL")
-    print("-------------------------------------------------------")
-    print("1. Request OTP")
-    print("2. Submit OTP")
-    print("99. Tutup aplikasi")
-    print("-------------------------------------------------------")
-    
+console = Console()
+theme = get_theme()
+
+def normalize_xl_number(raw: str) -> str | None:
+    raw = raw.strip().replace(" ", "").replace("-", "")
+    if raw.startswith("+62"):
+        normalized = "62" + raw[3:]
+    elif raw.startswith("62"):
+        normalized = raw
+    elif raw.startswith("08"):
+        normalized = "62" + raw[1:]
+    else:
+        return None
+
+    if normalized.startswith("628") and 10 <= len(normalized) <= 14 and normalized.isdigit():
+        return normalized
+    return None
+
 def login_prompt(api_key: str):
     clear_screen()
-    print("-------------------------------------------------------")
-    print("Login ke MyXL")
-    print("-------------------------------------------------------")
-    print("Masukan nomor XL (Contoh 6281234567890):")
-    phone_number = input("Nomor: ")
-
-    if not phone_number.startswith("628") or len(phone_number) < 10 or len(phone_number) > 14:
-        print("Nomor tidak valid. Pastikan nomor diawali dengan '628' dan memiliki panjang yang benar.")
-        return None
+    console.print(Panel("🔐 Login ke MyXL", border_style=theme["border_primary"], padding=(1, 2)))
+    raw_input = console.input(f"[{theme['text_sub']}]Masukkan nomor XL (08xx / 628xx / +628xx):[/{theme['text_sub']}] ").strip()
+    phone_number = normalize_xl_number(raw_input)
+    if not phone_number:
+        print_panel("⚠️ Error", "Nomor tidak valid. Format harus 08xx, 628xx, atau +628xx.")
+        return None, None
 
     try:
         subscriber_id = get_otp(phone_number)
         if not subscriber_id:
-            return None
-        print("OTP Berhasil dikirim ke nomor Anda.")
-        
+            print_panel("⚠️ Error", "Gagal mengirim OTP.")
+            return None, None
+
+        print_panel("✅ Info", "OTP berhasil dikirim ke nomor Anda.")
         try_count = 5
         while try_count > 0:
-            print(f"Sisa percobaan: {try_count}")
-            otp = input("Masukkan OTP yang telah dikirim: ")
+            otp = console.input(f"[{theme['text_sub']}]Masukkan OTP (6 digit):[/{theme['text_sub']}] ").strip()
             if not otp.isdigit() or len(otp) != 6:
-                print("OTP tidak valid. Pastikan OTP terdiri dari 6 digit angka.")
+                print_panel("⚠️ Error", "OTP tidak valid. Harus 6 digit angka.")
                 continue
-            
+
             tokens = submit_otp(api_key, phone_number, otp)
             if not tokens:
-                print("OTP salah. Silahkan coba lagi.")
                 try_count -= 1
+                print_panel("⚠️ Error", f"OTP salah. Sisa percobaan: {try_count}")
                 continue
-            
-            print("Berhasil login!")
+
+            print_panel("✅ Sukses", "Berhasil login!")
             return phone_number, tokens["refresh_token"]
 
-        print("Gagal login setelah beberapa percobaan. Silahkan coba lagi nanti.")
+        print_panel("⛔ Gagal", "Login gagal setelah beberapa percobaan.")
         return None, None
     except Exception as e:
+        print_panel("⚠️ Error", f"Gagal login: {e}")
         return None, None
 
 def show_account_menu():
@@ -57,89 +67,84 @@ def show_account_menu():
     AuthInstance.load_tokens()
     users = AuthInstance.refresh_tokens
     active_user = AuthInstance.get_active_user()
-    
-    # print(f"users: {users}")
-    
+
     in_account_menu = True
     add_user = False
+
     while in_account_menu:
         clear_screen()
-        print("-------------------------------------------------------")
+
         if AuthInstance.get_active_user() is None or add_user:
             number, refresh_token = login_prompt(AuthInstance.api_key)
             if not refresh_token:
-                print("Gagal menambah akun. Silahkan coba lagi.")
-                pause()
+                print_panel("⚠️ Error", "Gagal menambah akun.")
                 continue
-            
+
             AuthInstance.add_refresh_token(int(number), refresh_token)
             AuthInstance.load_tokens()
             users = AuthInstance.refresh_tokens
             active_user = AuthInstance.get_active_user()
-            
-            
-            if add_user:
-                add_user = False
+            add_user = False
             continue
-        
-        print("Akun Tersimpan:")
-        if not users or len(users) == 0:
-            print("Tidak ada akun tersimpan.")
 
+        console.print(Panel("👥 Akun Tersimpan", border_style=theme["border_info"], padding=(1, 2)))
+        if not users:
+            print_panel("ℹ️ Info", "Belum ada akun tersimpan.")
+
+        table = Table(show_header=False, box=None)
+        table.add_column("No", style=theme["text_key"], justify="right", width=4)
+        table.add_column("Nomor", style=theme["text_body"])
         for idx, user in enumerate(users):
             is_active = active_user and user["number"] == active_user["number"]
-            active_marker = " (Aktif)" if is_active else ""
-            print(f"{idx + 1}. {user['number']}{active_marker}")
-        
-        print("-" * 55)
-        print("Command:")
-        print("0: Tambah Akun")
-        print("Masukan nomor urut akun untuk berganti.")
-        print("Masukan del <nomor urut> untuk menghapus akun tertentu.")
-        print("00: Kembali ke menu utama")
-        print("-" * 55)
-        input_str = input("Pilihan:")
+            marker = " [bold green](Aktif)[/]" if is_active else ""
+            table.add_row(str(idx + 1), f"{user['number']}{marker}")
+        console.print(table)
+
+        nav = Table(show_header=False, box=None)
+        nav.add_column("Kode", style=theme["text_key"], justify="right", width=6)
+        nav.add_column("Aksi", style=theme["text_body"])
+        nav.add_row("0", "➕ Tambah Akun")
+        nav.add_row("del <n>", "🗑️ Hapus akun ke-n")
+        nav.add_row("00", "⬅️ Kembali ke menu utama")
+        console.print(Panel(nav, title="📋 Navigasi", border_style=theme["border_primary"], padding=(0, 1)))
+
+        input_str = console.input(f"[{theme['text_sub']}]Pilihan:[/{theme['text_sub']}] ").strip().lower()
+
         if input_str == "00":
             in_account_menu = False
             return active_user["number"] if active_user else None
+
         elif input_str == "0":
             add_user = True
             continue
+
         elif input_str.isdigit() and 1 <= int(input_str) <= len(users):
             selected_user = users[int(input_str) - 1]
             return selected_user['number']
+
         elif input_str.startswith("del "):
             parts = input_str.split()
             if len(parts) == 2 and parts[1].isdigit():
                 del_index = int(parts[1])
-                
-                # Prevent deleting the active user here
-                if active_user and users[del_index - 1]["number"] == active_user["number"]:
-                    print("Tidak dapat menghapus akun aktif. Silahkan ganti akun terlebih dahulu.")
-                    pause()
-                    continue
-                
                 if 1 <= del_index <= len(users):
                     user_to_delete = users[del_index - 1]
-                    confirm = input(f"Yakin ingin menghapus akun {user_to_delete['number']}? (y/n): ")
-                    if confirm.lower() == 'y':
+                    if active_user and user_to_delete["number"] == active_user["number"]:
+                        print_panel("⚠️ Error", "Tidak bisa hapus akun aktif. Ganti dulu.")
+                        continue
+                    confirm = console.input(f"[{theme['text_sub']}]Yakin hapus {user_to_delete['number']}? (y/n):[/{theme['text_sub']}] ").strip().lower()
+                    if confirm == "y":
                         AuthInstance.remove_refresh_token(user_to_delete["number"])
-                        # AuthInstance.load_tokens()
                         users = AuthInstance.refresh_tokens
                         active_user = AuthInstance.get_active_user()
-                        print("Akun berhasil dihapus.")
-                        pause()
+                        print_panel("✅ Info", "Akun berhasil dihapus.")
                     else:
-                        print("Penghapusan akun dibatalkan.")
-                        pause()
+                        print_panel("ℹ️ Info", "Penghapusan dibatalkan.")
                 else:
-                    print("Nomor urut tidak valid.")
-                    pause()
+                    print_panel("⚠️ Error", "Nomor urut tidak valid.")
             else:
-                print("Perintah tidak valid. Gunakan format: del <nomor urut>")
-                pause()
+                print_panel("⚠️ Error", "Format salah. Gunakan: del <nomor>")
             continue
+
         else:
-            print("Input tidak valid. Silahkan coba lagi.")
-            pause()
+            print_panel("⚠️ Error", "Input tidak valid.")
             continue
