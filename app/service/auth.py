@@ -178,4 +178,13 @@ class Auth:
                     number = int(number_str)
                     self.set_active_user(number)
 
+    def edit_account_name(self, number: int, new_name: str):
+        for rt in self.refresh_tokens:
+            if rt["number"] == number:
+                rt["name"] = new_name
+                break
+        self.write_tokens_to_file()
+        if self.active_user and self.active_user["number"] == number:
+            self.active_user["name"] = new_name
+
 AuthInstance = Auth()
