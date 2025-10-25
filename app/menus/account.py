@@ -12,6 +12,7 @@ from app.menus.util import pause
 from app.menus.util_helper import print_panel, clear_screen
 
 console = Console()
+theme = get_theme()
 
 def normalize_number(raw_input: str) -> str:
     raw_input = raw_input.strip().replace(" ", "").replace("-", "")
@@ -25,7 +26,6 @@ def normalize_number(raw_input: str) -> str:
 
 def login_prompt(api_key: str):
     clear_screen()
-    theme = get_theme()
     console.print(Panel("🔐 Login ke MyXL", border_style=theme["border_primary"], padding=(1, 2)))
     raw_input = console.input("Masukkan nomor XL (08xx / 628xx / +628xx): ").strip()
     phone_number = normalize_number(raw_input)
@@ -42,35 +42,40 @@ def login_prompt(api_key: str):
             return None, None
 
         print_panel("✅ Info", "OTP berhasil dikirim ke nomor Anda.")
-        otp = console.input("Masukkan OTP (6 digit): ").strip()
+        max_attempts = 5
+        for attempt in range(max_attempts):
+            console.print(f"[{theme['text_sub']}]Percobaan ke-{attempt + 1} dari {max_attempts}[/{theme['text_sub']}]")
+            otp = console.input("Masukkan OTP (6 digit): ").strip()
 
-        if not otp.isdigit() or len(otp) != 6:
-            print_panel("⚠️ Error", "OTP tidak valid. Harus 6 digit angka.")
-            pause()
-            return None, None
+            if not otp.isdigit() or len(otp) != 6:
+                print_panel("⚠️ Error", "OTP tidak valid. Harus 6 digit angka.")
+                pause()
+                continue
 
-        print_panel("⏳ Info", "Memverifikasi OTP...")
-        tokens = submit_otp(api_key, phone_number, otp)
-        if not tokens:
-            print_panel("⚠️ Error", "Gagal login. Periksa OTP dan coba lagi.")
-            pause()
-            return None, None
+            print_panel("⏳ Info", "Memverifikasi OTP...")
+            tokens = submit_otp(api_key, phone_number, otp)
+            if tokens:
+                print_panel("✅ Sukses", f"Berhasil login sebagai {phone_number}")
+                return phone_number, tokens["refresh_token"]
+            else:
+                print_panel("⚠️ Error", "OTP salah. Silakan coba lagi.")
+                pause()
 
-        print_panel("✅ Sukses", f"Berhasil login sebagai {phone_number}")
-        return phone_number, tokens["refresh_token"]
+        print_panel("⛔ Gagal", "Login gagal setelah 5 percobaan.")
+        return None, None
+
     except Exception as e:
         print_panel("⚠️ Error", f"Terjadi kesalahan: {e}")
         return None, None
 
 def show_account_menu():
     clear_screen()
-    theme = get_theme()
     AuthInstance.load_tokens()
     users = AuthInstance.refresh_tokens
     active_user = AuthInstance.get_active_user()
 
     border_set = 2
-    name_set = "barbexid"
+    unlock_code = "barbexid"
     unlock_data = load_status()
     is_unlocked = unlock_data.get("is_unlocked", False)
 
@@ -84,7 +89,7 @@ def show_account_menu():
             if not is_unlocked and len(users) >= border_set:
                 print_panel("🚫 Batas akun tercapai", "Masukkan kode unlock untuk menambah akun.")
                 unlock_input = console.input("Kode Unlock: ").strip()
-                if unlock_input != name_set:
+                if unlock_input != unlock_code:
                     print_panel("⚠️ Gagal", "Kode unlock salah. Tidak bisa menambah akun.")
                     pause()
                     add_user = False
@@ -194,6 +199,11 @@ def show_account_menu():
                         AuthInstance.load_tokens()
                         users = AuthInstance.refresh_tokens
                         active_user = AuthInstance.get_active_user()
+                        print_panel("✅ Info", f"Akun {selected_user['number']} berhasil dihapus.")
+                    else:
+                        print_panel("ℹ️ Info", "Penghapusan akun dibatalkan.")
+                    pause()
+                else:
                         print_panel("✅ Info", f"Akun {selected_user['number']} berhasil dihapus.")
                     else:
                         print_panel("ℹ️ Info", "Penghapusan akun dibatalkan.")
