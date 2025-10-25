@@ -45,10 +45,16 @@ def show_hot_menu():
         table.add_column("Opsi", style=theme["text_body"])
 
         for idx, p in enumerate(hot_packages):
-            table.add_row(str(idx + 1), p["family_name"], p["variant_name"], p["option_name"])
+            table.add_row(str(idx + 1), p["family_name"], p["variant_name"], p["option_name"], padding=(0, 0))
 
         console.print(Panel(table, border_style=theme["border_primary"], expand=True))
-        console.print(Panel("00. Kembali ke menu utama", border_style=theme["border_info"], padding=(1, 1)))
+        
+        nav_table = Table(show_header=False, box=MINIMAL_DOUBLE_HEAD, expand=True)
+        nav_table.add_column(justify="right", style=theme["text_key"], width=4)
+        nav_table.add_column(style=theme["text_body"])
+        nav_table.add_row("00", f"[{theme['text_sub']}]Kembali ke menu utama[/]")
+
+        console.print(Panel(nav_table, border_style=theme["border_info"], padding=(0, 1), expand=True))
 
         choice = console.input("Pilih paket (nomor): ").strip()
         if choice == "00":
@@ -93,7 +99,7 @@ from app.client.qris import show_qris_payment
 from app.client.balance import settlement_balance
 from app.type_dict import PaymentItem
 from app.config.theme_config import get_theme
-from app.menus.util_helper import print_panel
+from app.menus.util_helper import get_rupiah, print_panel
 
 console = Console()
 
