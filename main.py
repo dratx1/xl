@@ -88,8 +88,8 @@ def build_profile():
     profile_data = get_profile(AuthInstance.api_key, active_user["tokens"]["access_token"], active_user["tokens"]["id_token"])
     sub_type = profile_data["profile"]["subscription_type"]
 
-    #point_info = "Points: N/A | Tier: N/A"
-    #if sub_type == "PREPAID":
+    point_info = "Points: N/A | Tier: N/A"
+    if sub_type == "PREPAID":
     #    tiering_data = get_tiering_info(AuthInstance.api_key, active_user["tokens"])
     #    tier = tiering_data.get("tier", 0)
     #    current_point = tiering_data.get("current_point", 0)
