@@ -4,7 +4,7 @@ import base64
 from Crypto.Cipher import AES
 from Crypto.Util.Padding import pad, unpad
 
-is_anu = os.path.join(os.path.dirname(__file__), "unlock_status.json")
+is_anu = os.path.join(os.path.dirname(__file__), "status.json")
 anu_aes = b'barbex_id_secret!'
 
 def encrypt_base64(data: dict) -> str:
