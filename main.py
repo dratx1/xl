@@ -38,12 +38,11 @@ from app.menus.theme import show_theme_menu
 from app.config.theme_config import get_theme
 
 console = Console()
-theme = get_theme()
 
 def show_main_menu(profile):
     expired_at_dt = datetime.fromtimestamp(profile["balance_expired_at"]).strftime("%Y-%m-%d")
     pulsa_str = get_rupiah(profile["balance"])
-    get_theme()
+    theme = get_theme()
 
     info_table = Table.grid(padding=(0, 1))
     info_table.add_column(justify="left", style=theme["text_body"])
