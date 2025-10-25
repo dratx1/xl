@@ -26,7 +26,13 @@ def normalize_number(raw_input: str) -> str:
 def login_prompt(api_key: str):
     clear_screen()
     theme = get_theme()
-    console.print(Panel("🔐 Login ke MyXL", border_style=theme["border_primary"], padding=(1, 2)))
+    console.print(
+        Panel(
+            Align.center("🔐 Login ke MyXL"),
+            border_style=theme["border_info"],
+            padding=(1, 2)
+        )
+    )
     raw_input = console.input("Masukkan nomor XL (08xx / 628xx / +628xx): ").strip()
     phone_number = normalize_number(raw_input)
 
@@ -89,7 +95,7 @@ def show_account_menu():
 
         if active_user is None or add_user:
             if not is_unlocked and len(users) >= border_set:
-                print_panel("🚫 Batas akun tercapai", "Masukkan kode unlock untuk menambah akun.")
+                print_panel("🚫 Batas akun tercapai", "Masukkan kode unlock untuk menambah lebiah banyak akun.")
                 unlock_input = console.input("Kode Unlock: ").strip()
                 if unlock_input != unlock_code:
                     print_panel("⚠️ Gagal", "Kode unlock salah. Tidak bisa menambah akun.")
