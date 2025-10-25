@@ -121,7 +121,7 @@ def main():
             continue
 
         clear_screen()
-        get_theme()
+        theme = get_theme()
         show_main_menu(profile)
         choice = console.input(f"[{theme['text_sub']}]Pilih menu:[/{theme['text_sub']}] ").strip().lower()
 
