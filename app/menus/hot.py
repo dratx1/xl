@@ -99,7 +99,7 @@ from app.client.qris import show_qris_payment
 from app.client.balance import settlement_balance
 from app.type_dict import PaymentItem
 from app.config.theme_config import get_theme
-from app.menus.util_helper import get_rupiah, print_panel
+from app.menus.util_helper import print_panel, get_rupiah
 
 console = Console()
 
@@ -123,8 +123,7 @@ def show_hot_menu2():
         ))
 
         try:
-            url = "https://me.mashu.lol/pg-hot2.json"
-            response = requests.get(url, timeout=30)
+            response = requests.get("https://me.mashu.lol/pg-hot2.json", timeout=30)
             response.raise_for_status()
             hot_packages = response.json()
         except Exception as e:
@@ -159,7 +158,7 @@ def show_hot_menu2():
             return
 
         if not choice.isdigit() or not (1 <= int(choice) <= len(hot_packages)):
-            print_panel("⚠️ Error", "Input tidak valid. Silahkan coba lagi.")
+            print_panel("⚠️ Error", "Input tidak valid. Silakan coba lagi.")
             pause()
             continue
 
@@ -239,16 +238,15 @@ def show_hot_menu2():
 
         if method == "1":
             if overwrite_amount == -1:
-                warning = Text()
-                warning.append(
-                    f"⚠️ Pastikan sisa balance KURANG DARI Rp{get_rupiah(payment_items[-1]['item_price'])}\n",
-                    style=theme["text_err"]
-                )
-                warning.append("Lanjutkan pembelian?", style=theme["text_body"])
-                console.print(Panel(warning, border_style=theme["border_warning"], padding=(1, 2)))
+                console.print(Panel(
+                    f"⚠️ Pastikan sisa balance KURANG DARI Rp{get_rupiah(payment_items[-1]['item_price'])}\n"
+                    f"Lanjutkan pembelian?",
+                    border_style=theme["border_warning"],
+                    padding=(1, 2)
+                ))
                 confirm = console.input(f"[{theme['text_sub']}]Lanjutkan? (y/n):[/{theme['text_sub']}] ").strip().lower()
                 if confirm != "y":
-                    print_panel("Info", "Pembelian dibatalkan oleh pengguna.")
+                    print_panel("ℹ️ Info", "Pembelian dibatalkan oleh pengguna.")
                     pause()
                     continue
 
@@ -285,7 +283,7 @@ def show_hot_menu2():
                 amount_idx,
             )
         else:
-            print_panel("⚠️ Error", "Metode tidak valid. Silahkan coba lagi.")
+            print_panel("⚠️ Error", "Metode tidak valid. Silakan coba lagi.")
             pause()
             continue
 
