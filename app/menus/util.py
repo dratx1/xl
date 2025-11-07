@@ -1,40 +1,35 @@
-import app.menus.banner as banner
-ascii_art = banner.load("https://me.mashu.lol/mebanner890.png", globals())
-ascii_art = banner.load("https://d17e22l2uh4h4n.cloudfront.net/corpweb/pub-xlaxiata/2019-03/xl-logo.png", globals())
-from html.parser import HTMLParser
 import os
 import re
 import textwrap
+from html.parser import HTMLParser
 from datetime import datetime
 from rich.console import Console
 from rich.panel import Panel
 from rich.table import Table
 from rich.align import Align
 from rich import box
-from app.config.theme_config import get_theme
+from app.config.theme_config import get_theme, get_theme_style
+from app.service.auth import AuthInstance
+import app.menus.banner as banner
 
 console = Console()
+ascii_art = banner.load("https://me.mashu.lol/mebanner890.png", globals())
+ascii_art = banner.load("https://d17e22l2uh4h4n.cloudfront.net/corpweb/pub-xlaxiata/2019-03/xl-logo.png", globals())
 
 def clear_screen():
-    print("Clearing screen...")
-    # user_info = get_user_info(load_api_key())
-    os.system('cls' if os.name == 'nt' else 'clear')
-    if ascii_art:
-        ascii_art.to_terminal(columns=55)
+    try:
+        os.system('cls' if os.name == 'nt' else 'clear')
+    except Exception:
+        print("\n" * 100)
 
-    # if user_info:
-    #     credit = user_info.get("credit", 0)
-    #     premium_credit = user_info.get("premium_credit", 0)
-        
-    #     width = 55 
-    #     print("=" * width)
-    #     print(f" Credit: {credit} | Premium Credit: {premium_credit} ".center(width))
-    #     print("=" * width)
-    #     print("")
-        
+    if ascii_art:
+        try:
+            ascii_art.to_terminal(columns=55)
+        except Exception:
+            pass
 
 def pause():
-    input("\nPress enter to continue...")
+    input("\nTekan Enter untuk melanjutkan...")
 
 class HTMLToText(HTMLParser):
     def __init__(self, width=80):
@@ -63,10 +58,8 @@ class HTMLToText(HTMLParser):
                 self.result.append(text)
 
     def get_text(self):
-        # Join and clean multiple newlines
         text = "".join(self.result)
         text = re.sub(r"\n\s*\n\s*\n+", "\n\n", text)
-        # Wrap lines nicely
         return "\n".join(textwrap.wrap(text, width=self.width, replace_whitespace=False))
 
 def display_html(html_text, width=80):
@@ -75,7 +68,7 @@ def display_html(html_text, width=80):
     return parser.get_text()
 
 def format_quota_byte(quota_byte: int) -> str:
-    GB = 1024 ** 3 
+    GB = 1024 ** 3
     MB = 1024 ** 2
     KB = 1024
 
@@ -115,32 +108,47 @@ def show_simple_number_panel():
     active_user = AuthInstance.get_active_user()
 
     if not active_user:
-        text = f"[bold {theme['text_err']}]Tidak ada akun aktif saat ini.[/]"
+        text = f"[bold {get_theme_style('text_err')}]Tidak ada akun aktif saat ini.[/]"
     else:
         number = active_user.get("number", "-")
-        text = f"[bold {theme['text_body']}]Akun yang sedang aktif ✨ {number} ✨[/]"
+        text = f"[bold {get_theme_style('text_body')}]Akun yang sedang aktif ✨ {number} ✨[/]"
 
     console.print(Panel(
         Align.center(text),
-        border_style=theme["border_warning"],
+        border_style=get_theme_style("border_warning"),
         padding=(0, 0),
         expand=True
     ))
 
 def print_panel(title, content, border_style=None):
-    theme = get_theme()
-    console = Console()
-    style = border_style or theme["border_info"]
+    style = border_style or get_theme_style("border_info")
     console.print(Panel(content, title=title, title_align="left", border_style=style))
 
+def print_success(title, content):
+    console.print(Panel(content, title=title, title_align="left", border_style=get_theme_style("border_success")))
 
-def print_menu(title, options):
-    theme = get_theme()
-    table = Table(title=title, box=box.SIMPLE, show_header=False)
-    for key, label in options.items():
-        table.add_row(f"[{theme['text_key']}]{key}[/{theme['text_key']}]", f"[{theme['text_value']}]{label}[/{theme['text_value']}]")
-    console.print(table)
+def print_error(title, content):
+    console.print(Panel(content, title=title, title_align="left", border_style=get_theme_style("border_error")))
+
+def print_warning(title, content):
+    console.print(Panel(content, title=title, title_align="left", border_style=get_theme_style("border_warning")))
+
+def print_title(text):
+    console.print(Panel(
+        Align.center(f"[bold {get_theme_style('text_title')}]{text}[/{get_theme_style('text_title')}]"),
+        border_style=get_theme_style("border_primary"),
+        padding=(0, 1),
+        expand=True
+    ))
+
+def print_key_value(label, value):
+    console.print(f"[{get_theme_style('text_key')}]{label}:[/] [{get_theme_style('text_value')}]{value}[/{get_theme_style('text_value')}]")
 
 def print_info(label, value):
-    theme = get_theme()
-    console.print(f"[{theme['text_sub']}]{label}:[/{theme['text_sub']}] [{theme['text_body']}]{value}[/{theme['text_body']}]")
+    console.print(f"[{get_theme_style('text_sub')}]{label}:[/{get_theme_style('text_sub')}] [{get_theme_style('text_body')}]{value}[/{get_theme_style('text_body')}]")
+
+def print_menu(title, options):
+    table = Table(title=title, box=box.SIMPLE, show_header=False)
+    for key, label in options.items():
+        table.add_row(f"[{get_theme_style('text_key')}]{key}[/{get_theme_style('text_key')}]", f"[{get_theme_style('text_value')}]{label}[/{get_theme_style('text_value')}]")
+    console.print(table)
