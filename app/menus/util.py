@@ -109,3 +109,38 @@ def get_rupiah(value) -> str:
 
 def live_loading(text: str, theme: dict):
     return console.status(f"[{theme['text_sub']}]{text}[/{theme['text_sub']}]", spinner="dots")
+
+def show_simple_number_panel():
+    theme = get_theme()
+    active_user = AuthInstance.get_active_user()
+
+    if not active_user:
+        text = f"[bold {theme['text_err']}]Tidak ada akun aktif saat ini.[/]"
+    else:
+        number = active_user.get("number", "-")
+        text = f"[bold {theme['text_body']}]Akun yang sedang aktif ✨ {number} ✨[/]"
+
+    console.print(Panel(
+        Align.center(text),
+        border_style=theme["border_warning"],
+        padding=(0, 0),
+        expand=True
+    ))
+
+def print_panel(title, content, border_style=None):
+    theme = get_theme()
+    console = Console()
+    style = border_style or theme["border_info"]
+    console.print(Panel(content, title=title, title_align="left", border_style=style))
+
+
+def print_menu(title, options):
+    theme = get_theme()
+    table = Table(title=title, box=box.SIMPLE, show_header=False)
+    for key, label in options.items():
+        table.add_row(f"[{theme['text_key']}]{key}[/{theme['text_key']}]", f"[{theme['text_value']}]{label}[/{theme['text_value']}]")
+    console.print(table)
+
+def print_info(label, value):
+    theme = get_theme()
+    console.print(f"[{theme['text_sub']}]{label}:[/{theme['text_sub']}] [{theme['text_body']}]{value}[/{theme['text_body']}]")
