@@ -1,10 +1,19 @@
 import app.menus.banner as banner
 ascii_art = banner.load("https://me.mashu.lol/mebanner890.png", globals())
-
+ascii_art = banner.load("https://d17e22l2uh4h4n.cloudfront.net/corpweb/pub-xlaxiata/2019-03/xl-logo.png", globals())
 from html.parser import HTMLParser
 import os
 import re
 import textwrap
+from datetime import datetime
+from rich.console import Console
+from rich.panel import Panel
+from rich.table import Table
+from rich.align import Align
+from rich import box
+from app.config.theme_config import get_theme
+
+console = Console()
 
 def clear_screen():
     print("Clearing screen...")
@@ -78,3 +87,25 @@ def format_quota_byte(quota_byte: int) -> str:
         return f"{quota_byte / KB:.2f} KB"
     else:
         return f"{quota_byte} B"
+
+def get_rupiah(value) -> str:
+    value_str = str(value).strip()
+    value_str = re.sub(r"^Rp\s?", "", value_str)
+    match = re.match(r"([\d,]+)(.*)", value_str)
+    if not match:
+        return value_str
+
+    raw_number = match.group(1).replace(",", "")
+    suffix = match.group(2).strip()
+
+    try:
+        number = int(raw_number)
+    except ValueError:
+        return value_str
+
+    formatted_number = f"{number:,}".replace(",", ".")
+    formatted = f"{formatted_number},-"
+    return f"{formatted} {suffix}" if suffix else formatted
+
+def live_loading(text: str, theme: dict):
+    return console.status(f"[{theme['text_sub']}]{text}[/{theme['text_sub']}]", spinner="dots")
