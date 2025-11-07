@@ -43,7 +43,7 @@ def show_main_menu(profile):
     info_table.add_column(justify="left", style=get_theme_style("text_value"))
     info_table.add_row("Nomor", f": {profile.get('number', '-')}")
     info_table.add_row("Tipe", f": {profile.get('subscription_type', '-')}")
-    info_table.add_row("Pulsa", f": {pulsa_str}")
+    info_table.add_row("Pulsa", f": Rp {pulsa_str}")
     info_table.add_row("Masa Aktif", f": {expired_at_dt}")
     info_table.add_row("Tiering", f": {profile.get('point_info', '-')}")
 
