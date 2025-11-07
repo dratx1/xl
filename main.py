@@ -6,10 +6,11 @@ from datetime import datetime
 from rich.console import Console
 from rich.panel import Panel
 from rich.table import Table
-from rich.text import Text
 from rich.box import MINIMAL_DOUBLE_HEAD
-from app.config.theme_config import get_theme
-from app.menus.util import clear_screen, pause
+from app.config.theme_config import get_theme, get_theme_style
+from app.menus.util import (
+    clear_screen, pause, print_panel, print_error, print_warning, get_rupiah
+)
 from app.service.auth import AuthInstance
 from app.service.git import check_for_updates
 from app.client.engsel import get_balance, get_tiering_info
@@ -31,27 +32,26 @@ from app.menus.store.redemables import show_redeemables_menu
 from app.service.sentry import enter_sentry_mode
 
 console = Console()
-theme = get_theme()
 
 def show_main_menu(profile):
     clear_screen()
     expired_at_dt = datetime.fromtimestamp(profile["balance_expired_at"]).strftime("%Y-%m-%d")
-    pulsa_str = f"Rp {profile['balance']:,}".replace(",", ".")
+    pulsa_str = get_rupiah(profile["balance"])
 
     info_table = Table.grid(padding=(0, 1))
-    info_table.add_column(justify="left", style=theme["text_body"])
-    info_table.add_column(justify="left", style=theme["text_value"])
+    info_table.add_column(justify="left", style=get_theme_style("text_body"))
+    info_table.add_column(justify="left", style=get_theme_style("text_value"))
     info_table.add_row("Nomor", f": {profile['number']}")
     info_table.add_row("Tipe", f": {profile['subscription_type']}")
     info_table.add_row("Pulsa", f": {pulsa_str}")
     info_table.add_row("Masa Aktif", f": {expired_at_dt}")
     info_table.add_row("Tiering", f": {profile['point_info']}")
 
-    console.print(Panel(info_table, title="📱 Informasi Akun", border_style=theme["border_info"], expand=True))
+    console.print(Panel(info_table, title="📱 Informasi Akun", border_style=get_theme_style("border_info"), expand=True))
 
     menu_table = Table(show_header=False, box=MINIMAL_DOUBLE_HEAD, expand=True)
-    menu_table.add_column("Kode", justify="right", style=theme["text_key"], width=6)
-    menu_table.add_column("Menu", style=theme["text_body"])
+    menu_table.add_column("Kode", justify="right", style=get_theme_style("text_key"), width=6)
+    menu_table.add_column("Menu", style=get_theme_style("text_body"))
 
     menu_items = [
         ("1", "🔐 Login/Ganti akun"),
@@ -72,14 +72,14 @@ def show_main_menu(profile):
         ("N", "🔔 Notifikasi"),
         ("V", "✅ Validate MSISDN"),
         ("00", "⭐ Bookmark Paket"),
-        ("88", f"[{theme['text_sub']}]🎨 Ganti Tema CLI [/]"),
-        ("99", f"[{theme['text_err']}]⛔ Tutup Aplikasi [/]"),
+        ("88", f"[{get_theme_style('text_sub')}]🎨 Ganti Tema CLI [/]"),
+        ("99", f"[{get_theme_style('text_err')}]⛔ Tutup Aplikasi [/]"),
     ]
 
     for kode, label in menu_items:
         menu_table.add_row(kode, label)
 
-    console.print(Panel(menu_table, title="📋 Menu Utama", border_style=theme["border_primary"], expand=True))
+    console.print(Panel(menu_table, title="📋 Menu Utama", border_style=get_theme_style("border_primary"), expand=True))
 
 
 def main():
@@ -104,7 +104,7 @@ def main():
             }
 
             show_main_menu(profile)
-            choice = console.input(f"[{theme['text_sub']}]Pilih menu:[/{theme['text_sub']}] ").strip()
+            choice = console.input(f"[{get_theme_style('text_sub')}]Pilih menu:[/{get_theme_style('text_sub')}] ").strip()
 
             match choice.lower():
                 case "1": selected = show_account_menu(); AuthInstance.set_active_user(selected) if selected else pause()
@@ -148,22 +148,22 @@ def main():
                 case "00": show_bookmark_menu()
                 case "88": show_theme_menu()
                 case "99":
-                    console.print(Panel("👋 Sampai jumpa!", border_style=theme["border_error"]))
+                    print_panel("👋 Sampai jumpa!", "Aplikasi ditutup", border_style=get_theme_style("border_error"))
                     sys.exit(0)
-                case _: console.print(Panel("⚠️ Pilihan tidak valid.", border_style=theme["border_warning"])); pause()
+                case _: print_warning("⚠️ Pilihan tidak valid", "Silakan pilih menu yang tersedia."); pause()
         else:
             selected = show_account_menu()
             if selected: AuthInstance.set_active_user(selected)
-            else: console.print("⚠️ Tidak ada akun dipilih."); pause()
+            else: print_error("⚠️ Tidak ada akun dipilih", "Silakan login terlebih dahulu."); pause()
 
 
 if __name__ == "__main__":
     try:
-        console.print("🔍 [bold]Checking for updates...[/]")
+        console.print(f"[bold {get_theme_style('text_sub')}]🔍 Checking for updates...[/]")
         if check_for_updates(): pause()
         main()
     except KeyboardInterrupt:
-        console.print("\n👋 Aplikasi dihentikan oleh pengguna.")
+        print_panel("👋 Keluar", "Aplikasi dihentikan oleh pengguna", border_style=get_theme_style("border_warning"))
     except Exception as e:
-        console.print(f"\n⚠️ [bold red]Error:[/] {type(e).__name__} - {e}")
+        print_error("⚠️ Error", f"{type(e).__name__} - {e}")
         pause()
