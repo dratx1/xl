@@ -55,7 +55,7 @@ def show_main_menu(profile):
 
     menu_items = [
         ("1", "🔐 Login/Ganti akun"),
-        ("2", "📦 Lihat Paket Saya"),
+        ("2", "📊 Lihat Paket Saya"),
         ("3", "🔥 Beli Paket Hot Promo"),
         ("4", "🔥 Beli Paket Hot Promo-2"),
         ("5", "💵 Beli Paket via Option Code"),
