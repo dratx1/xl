@@ -148,7 +148,7 @@ def main():
                 case "00": show_bookmark_menu()
                 case "88": show_theme_menu()
                 case "99":
-                    console.print(Panel("👋 Sampai jumpa!", border_style=theme["border_err"]))
+                    console.print(Panel("👋 Sampai jumpa!", border_style=theme["border_error"]))
                     sys.exit(0)
                 case _: console.print(Panel("⚠️ Pilihan tidak valid.", border_style=theme["border_warning"])); pause()
         else:
