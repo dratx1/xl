@@ -130,6 +130,7 @@ def show_account_menu():
             status = "✅ Aktif" if is_active else "-"
             account_table.add_row(
                 str(idx + 1),
+                user.get("name", "-"),
                 str(user["number"]),
                 user.get("subscription_type", "-"),
                 status
