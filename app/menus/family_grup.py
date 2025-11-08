@@ -8,7 +8,7 @@ from rich.align import Align
 from rich.text import Text
 from rich.box import MINIMAL_DOUBLE_HEAD
 
-from app.menus.package import get_packages_by_family
+from app.menus.package2 import get_packages_by_family
 from app.menus.util import clear_screen, pause, print_panel, live_loading
 from app.config.theme_config import get_theme
 
