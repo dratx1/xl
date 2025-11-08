@@ -169,7 +169,7 @@ def main():
             case "s":
                 enter_sentry_mode()
             case _:
-                print_warning("⚠️ Pilihan tidak valid", "Silakan pilih menu yang tersedia.")
+                print_panel("⚠️ Pilihan tidak valid", "Silakan pilih menu yang tersedia.", border_style=get_theme_style("border_info"))
                 pause()
 
 
