@@ -27,7 +27,7 @@ def git_pull_rebase():
         )
         console.print(Panel(
             text,
-            title=f"[{get_theme_style('text_sub')}]📥 Update CLI[/]",
+            title=f"[{get_theme_style('text_title')}]📥 Update CLI[/]",
             border_style=get_theme_style("border_warning"),
             padding=(1, 2),
             expand=True
@@ -80,7 +80,7 @@ def git_pull_rebase():
         )
         console.print(Panel(
             text,
-            title=f"[{get_theme_style('text_sub')}]📥 Update CLI[/]",
+            title=f"[{get_theme_style('text_title')}]📥 Update CLI[/]",
             border_style=get_theme_style("border_info"),
             padding=(1, 2),
             expand=True
@@ -92,7 +92,7 @@ def git_pull_rebase():
         )
         console.print(Panel(
             text,
-            title=f"[{get_theme_style('text_sub')}]📥 Update CLI[/]",
+            title=f"[{get_theme_style('text_title')}]📥 Update CLI[/]",
             border_style=get_theme_style("border_error"),
             padding=(1, 2),
             expand=True
@@ -107,7 +107,7 @@ def git_pull_rebase():
             )
             console.print(Panel(
                 text,
-                title=f"[{get_theme_style('text_sub')}]📥 Update CLI[/]",
+                title=f"[{get_theme_style('text_title')}]📥 Update CLI[/]",
                 border_style=get_theme_style("border_success"),
                 padding=(1, 2),
                 expand=True
@@ -118,7 +118,7 @@ def git_pull_rebase():
             )
             console.print(Panel(
                 text,
-                title=f"[{get_theme_style('text_sub')}]📥 Update CLI[/]",
+                title=f"[{get_theme_style('text_title')}]📥 Update CLI[/]",
                 border_style=get_theme_style("border_error"),
                 padding=(1, 2),
                 expand=True
@@ -132,7 +132,7 @@ def git_pull_rebase():
         )
         console.print(Panel(
             text,
-            title=f"[{get_theme_style('text_sub')}]📥 Update CLI[/]",
+            title=f"[{get_theme_style('text_title')}]📥 Update CLI[/]",
             border_style=get_theme_style("border_warning"),
             padding=(1, 2),
             expand=True
