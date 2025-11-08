@@ -590,7 +590,8 @@ console = Console()
 def get_packages_by_family(
     family_code: str,
     is_enterprise: bool | None = None,
-    migration_type: str | None = None
+    migration_type: str | None = None,
+    return_package_detail: bool = False
 ):
     api_key = AuthInstance.api_key
     tokens = AuthInstance.get_active_tokens()
