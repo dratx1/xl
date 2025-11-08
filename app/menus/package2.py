@@ -7,8 +7,7 @@ from rich.box import MINIMAL_DOUBLE_HEAD
 from app.config.theme_config import get_theme
 from app.menus.util import clear_screen, pause, print_panel, get_rupiah, format_quota_byte
 from app.service.auth import AuthInstance
-from app.client.engsel import get_package, send_api_request
-from app.client.unsubscribe import unsubscribe
+from app.client.engsel import get_package, send_api_request, unsubscribe
 from app.menus.package import show_package_details
 
 console = Console()
