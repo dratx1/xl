@@ -138,7 +138,7 @@ def git_pull_rebase():
 
 def run_main():
     import master
-    main.master()
+    master.main()
 
 if __name__ == "__main__":
     git_pull_rebase()
