@@ -54,7 +54,7 @@ def show_main_menu(profile):
     menu_table.add_column("Menu", style=get_theme_style("text_body"))
 
     menu_items = [
-        ("1", "🪪 Login/Ganti akun"),
+        ("1", "🔐 Login/Ganti akun"),
         ("2", "📊 Lihat Paket Saya"),
         ("3", "🔥 Beli Paket Hot Promo"),
         ("4", "🔥 Beli Paket Hot Promo-2"),
