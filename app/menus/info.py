@@ -18,7 +18,7 @@ def generate_qr_ascii(data: str) -> str:
     qr.print_ascii(out=output, invert=True)
     return output.getvalue()
 
-def show_donate_menu():
+def show_info_menu():
     clear_screen()
     theme = get_theme()
     qris_url = (
