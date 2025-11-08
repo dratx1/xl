@@ -30,6 +30,8 @@ from app.menus.store.segments import show_store_segments_menu
 from app.menus.store.search import show_family_list_menu, show_store_packages_menu
 from app.menus.store.redemables import show_redeemables_menu
 from app.service.sentry import enter_sentry_mode
+from app.menus.info import show_info_menu
+from app.menus.family_grup import show_family_grup_menu
 
 console = Console()
 
@@ -77,6 +79,8 @@ def show_main_menu(profile):
         ("N", "🔔 Notifikasi"),
         ("V", "✅ Validate MSISDN"),
         ("00", "⭐ Bookmark Paket"),
+        ("66", "💾 Simpan/Kelola Family Code")
+        ("77", f"[{get_theme_style('border_warning')}]📢 Info Unlock Code [/]") 
         ("88", f"[{get_theme_style('text_sub')}]🎨 Ganti Tema CLI [/]"),
         ("99", f"[{get_theme_style('text_err')}]⛔ Tutup Aplikasi [/]"),
     ]
@@ -171,6 +175,8 @@ def main():
                 pause()
             case "n": show_notification_menu()
             case "00": show_bookmark_menu()
+            case "66": show_family_grup_menu()
+            case "77": show_info_menu()
             case "88": show_theme_menu()
             case "99":
                 print_panel("👋 Sampai jumpa!", "Aplikasi ditutup", border_style=get_theme_style("border_info"))
