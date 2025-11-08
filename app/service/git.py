@@ -87,6 +87,6 @@ def show_panel(title, body, style="info"):
     border = get_theme_style(f"border_{style}")
     text = Text()
     for line in body.split("\n"):
-        line_style = get_theme_style("border_warn") if "http" in line else get_theme_style("text_body")
+        line_style = get_theme_style("text_link") if "http" in line else get_theme_style("text_body")
         text.append(line + "\n", style=line_style)
     console.print(Panel(text, title=title, border_style=border, expand=True))
