@@ -145,7 +145,7 @@ def run_main():
         import master
         master.main()
     except KeyboardInterrupt:
-        print_panel("👋 Keluar", "Aplikasi dihentikan oleh pengguna", border_style=get_theme_style("border_warning"))
+        print_panel("👋 Keluar", "Aplikasi dihentikan oleh pengguna", border_style=get_theme_style("border_info"))
         #pause()
         sys.exit(0)
     except Exception as e:
