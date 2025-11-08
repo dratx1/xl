@@ -23,12 +23,12 @@ def git_pull_rebase():
     if is_rebase_in_progress():
         text = Text.from_markup(
             "[bold yellow]⚠️ Rebase sebelumnya belum selesai[/]\n\n"
-            "[yellow]Selesaikan dengan `git rebase --continue` atau batalkan dengan `git rebase --abort`[/]"
+            f"[{get_theme_style('text_warning')}]Selesaikan dengan `git rebase --continue` atau batalkan dengan `git rebase --abort`[/]"
         )
         console.print(Panel(
             text,
-            title="📥 Update CLI",
-            border_style=get_theme_style("border_warning", "yellow"),
+            title=f"[{get_theme_style('text_sub')}]📥 Update CLI[/]",
+            border_style=get_theme_style("border_warning"),
             padding=(1, 2),
             expand=True
         ))
@@ -76,24 +76,24 @@ def git_pull_rebase():
 
     if result["status"] == "success":
         text = Text.from_markup(
-            f"✅ [bold green]Git pull berhasil[/]\n\n[white]{result['output']}[/]"
+            f"[bold {get_theme_style('text_success')}]✅ Git pull berhasil[/]\n\n[{get_theme_style('text_body')}]{result['output']}[/]"
         )
         console.print(Panel(
             text,
-            title="📥 Update CLI",
-            border_style=get_theme_style("border_success", "green"),
+            title=f"[{get_theme_style('text_sub')}]📥 Update CLI[/]",
+            border_style=get_theme_style("border_success"),
             padding=(1, 2),
             expand=True
         ))
 
     elif result["status"] == "fail":
         text = Text.from_markup(
-            f"❌ [bold red]Git pull gagal[/]\n\n[red]{result['error']}[/]\n\n[yellow]Mencoba reset paksa...[/]"
+            f"[bold {get_theme_style('text_error')}]❌ Git pull gagal[/]\n\n[{get_theme_style('text_error')}]{result['error']}[/]\n\n[{get_theme_style('text_warning')}]Mencoba reset paksa...[/]"
         )
         console.print(Panel(
             text,
-            title="📥 Update CLI",
-            border_style=get_theme_style("border_err", "red"),
+            title=f"[{get_theme_style('text_sub')}]📥 Update CLI[/]",
+            border_style=get_theme_style("border_error"),
             padding=(1, 2),
             expand=True
         ))
@@ -103,23 +103,23 @@ def git_pull_rebase():
 
         if result["status"] == "reset":
             text = Text.from_markup(
-                f"✅ [bold green]Reset berhasil, CLI disinkronkan ke origin[/]\n\n[white]{result['output']}[/]"
+                f"[bold {get_theme_style('text_success')}]✅ Reset berhasil, CLI disinkronkan ke origin[/]\n\n[{get_theme_style('text_body')}]{result['output']}[/]"
             )
             console.print(Panel(
                 text,
-                title="📥 Update CLI",
-                border_style=get_theme_style("border_success", "green"),
+                title=f"[{get_theme_style('text_sub')}]📥 Update CLI[/]",
+                border_style=get_theme_style("border_success"),
                 padding=(1, 2),
                 expand=True
             ))
         else:
             text = Text.from_markup(
-                f"❌ [bold red]Reset gagal[/]\n\n[red]{result['error']}[/]"
+                f"[bold {get_theme_style('text_error')}]❌ Reset gagal[/]\n\n[{get_theme_style('text_error')}]{result['error']}[/]"
             )
             console.print(Panel(
                 text,
-                title="📥 Update CLI",
-                border_style=get_theme_style("border_err", "red"),
+                title=f"[{get_theme_style('text_sub')}]📥 Update CLI[/]",
+                border_style=get_theme_style("border_error"),
                 padding=(1, 2),
                 expand=True
             ))
@@ -128,12 +128,12 @@ def git_pull_rebase():
 
     else:
         text = Text.from_markup(
-            f"⚠️ [bold yellow]Error saat menjalankan git pull[/]\n\n[yellow]{result['error']}[/]"
+            f"[bold {get_theme_style('text_warning')}]⚠️ Error saat menjalankan git pull[/]\n\n[{get_theme_style('text_warning')}]{result['error']}[/]"
         )
         console.print(Panel(
             text,
-            title="📥 Update CLI",
-            border_style=get_theme_style("border_warning", "yellow"),
+            title=f"[{get_theme_style('text_sub')}]📥 Update CLI[/]",
+            border_style=get_theme_style("border_warning"),
             padding=(1, 2),
             expand=True
         ))
@@ -146,7 +146,6 @@ def run_main():
         master.main()
     except KeyboardInterrupt:
         print_panel("👋 Keluar", "Aplikasi dihentikan oleh pengguna", border_style=get_theme_style("border_info"))
-        #pause()
         sys.exit(0)
     except Exception as e:
         print_error("❌ Gagal menjalankan master.py", f"{type(e).__name__} - {e}")
