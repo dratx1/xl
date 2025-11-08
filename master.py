@@ -121,7 +121,7 @@ def main():
         }
 
         show_main_menu(profile)
-        choice = console.input(f"[{get_theme_style('text_sub')}] 🎯 Pilih menu:[/{get_theme_style('text_sub')}] ").strip()
+        choice = console.input(f"[{get_theme_style('text_sub')}] 🎯Pilih menu:[/{get_theme_style('text_sub')}] ").strip()
 
         match choice.lower():
             case "1": selected = show_account_menu(); AuthInstance.set_active_user(selected) if selected else pause()
