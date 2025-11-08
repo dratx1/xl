@@ -5,7 +5,7 @@ from rich.text import Text
 from rich.align import Align
 from rich.box import MINIMAL_DOUBLE_HEAD
 from app.config.theme_config import get_theme
-from app.menus.util import clear_screen, pause, print_panel, get_rupiah, format_quota_byte
+from app.menus.util import clear_screen, pause, print_panel, get_rupiah, format_quota_byte, nav_range
 from app.service.auth import AuthInstance
 from app.client.engsel import get_package, send_api_request, unsubscribe
 from app.menus.package import show_package_details
@@ -268,8 +268,8 @@ def fetch_my_packages():
         nav_table.add_column(justify="right", style=theme["text_key"], width=6)
         nav_table.add_column(style=theme["text_body"])
         nav_table.add_row("00", f"[{theme['text_sub']}]Kembali ke menu utama[/]")
-        nav_table.add_row(render_nav_range("Nomor", len(my_packages)), "Nomor", "Lihat detail paket")
-        nav_table.add_row(render_nav_range("del", len(my_packages)), "del <Nomor>", f"[{theme['text_err']}]Unsubscribe dari paket[/]")
+        nav_table.add_row(nav_range("Nomor", len(my_packages)), "Nomor", "Lihat detail paket")
+        nav_table.add_row(nav_range("del", len(my_packages)), "del <Nomor>", f"[{theme['text_err']}]Unsubscribe dari paket[/]")
 
         console.print(Panel(
             nav_table,
