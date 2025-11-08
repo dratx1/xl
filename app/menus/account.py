@@ -1,15 +1,16 @@
+from rich.console import Console
+from rich.panel import Panel
+from rich.table import Table
+from rich.box import MINIMAL_DOUBLE_HEAD
+
 from app.client.ciam import get_otp, submit_otp
-from app.menus.util import (
-    clear_screen,
-    pause,
-    print_panel,
-    nav_range
-)
+from app.menus.util import clear_screen, pause, print_panel, nav_range
 from app.service.auth import AuthInstance
 from app.config.theme_config import get_theme
 
+console = Console()
+
 def login_prompt(api_key: str):
-    theme = get_theme()
     clear_screen()
     print_panel("🔐 Login ke MyXL", "Masukkan nomor XL (Contoh: 6281234567890)")
     phone_number = input("Nomor: ").strip()
@@ -77,17 +78,27 @@ def show_account_menu():
             add_user = False
             continue
 
-        print_panel("👥 Akun Tersimpan", "Daftar akun yang tersedia:")
+        console.print(Panel("📱 Akun Tersimpan", border_style=theme["border_info"], expand=True))
+
         if not users:
             print_panel("ℹ️ Info", "Belum ada akun tersimpan.")
         else:
-            for idx, user in enumerate(users):
+            table = Table(box=MINIMAL_DOUBLE_HEAD, expand=True)
+            table.add_column("No", justify="right", style=theme["text_key"], width=4)
+            table.add_column("Nomor", style=theme["text_value"])
+            table.add_column("Tipe", style=theme["text_body"])
+            table.add_column("Aktif", justify="center", style=theme["text_sub"], width=6)
+
+            for idx, user in enumerate(users, start=1):
                 is_active = active_user and user["number"] == active_user["number"]
                 marker = "✅" if is_active else ""
-                number = str(user.get("number", "")).ljust(14)
-                sub_type = user.get("subscription_type", "").center(12)
-                print(f"{idx + 1}. {number} [{sub_type}] {marker}")
+                number = str(user.get("number", ""))
+                sub_type = user.get("subscription_type", "-")
+                table.add_row(str(idx), number, sub_type, marker)
 
+            console.print(table)
+
+        # Navigasi
         print("-" * 55)
         print("Command:")
         print("0: Tambah Akun")
