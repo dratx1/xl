@@ -6,7 +6,7 @@ from rich.box import MINIMAL_DOUBLE_HEAD
 from app.config.theme_config import get_theme
 from app.menus.util import clear_screen, pause, print_panel, get_rupiah
 from app.service.auth import AuthInstance
-from app.client.engsel import get_family
+from app.client.engsel import get_family, get_package_details
 from app.menus.package import show_package_details
 
 console = Console()
@@ -23,20 +23,29 @@ def get_packages_by_family(
 
     if not tokens:
         print_panel("⚠️ Error", "Token pengguna aktif tidak ditemukan.")
-        pause()
-        return None
+        return "BACK"
 
     data = get_family(api_key, tokens, family_code, is_enterprise, migration_type)
     if not data:
         print_panel("⚠️ Error", "Gagal memuat data paket family.")
-        pause()
-        return None
+        return "BACK"
 
     price_currency = "Rp"
     if data["package_family"].get("rc_bonus_type") == "MYREWARDS":
         price_currency = "Poin"
 
     packages = []
+    for variant in data["package_variants"]:
+        for option in variant["package_options"]:
+            packages.append({
+                "number": len(packages) + 1,
+                "variant_name": variant["name"],
+                "option_name": option["name"],
+                "price": option["price"],
+                "code": option["package_option_code"],
+                "option_order": option["order"]
+            })
+
     while True:
         clear_screen()
 
@@ -66,25 +75,14 @@ def get_packages_by_family(
         table.add_column("Nama Paket", style=theme["text_body"])
         table.add_column("Harga", style=theme["text_money"], justify="right")
 
-        option_number = 1
-        for variant in data["package_variants"]:
-            for option in variant["package_options"]:
-                packages.append({
-                    "number": option_number,
-                    "variant_name": variant["name"],
-                    "option_name": option["name"],
-                    "price": option["price"],
-                    "code": option["package_option_code"],
-                    "option_order": option["order"]
-                })
-                harga_str = get_rupiah(option["price"]) if price_currency == "Rp" else f"{option['price']} Poin"
-                table.add_row(
-                    str(option_number),
-                    variant["name"],
-                    option["name"],
-                    harga_str
-                )
-                option_number += 1
+        for pkg in packages:
+            harga_str = get_rupiah(pkg["price"]) if price_currency == "Rp" else f"{pkg['price']} Poin"
+            table.add_row(
+                str(pkg["number"]),
+                pkg["variant_name"],
+                pkg["option_name"],
+                harga_str
+            )
 
         console.print(Panel(
             table,
@@ -109,7 +107,7 @@ def get_packages_by_family(
         # Input
         choice = console.input(f"[{theme['text_sub']}]Pilih paket (nomor):[/{theme['text_sub']}] ").strip()
         if choice == "00":
-            return None
+            return "BACK"
         if not choice.isdigit():
             print_panel("⚠️ Error", "Input tidak valid. Masukkan nomor paket.")
             pause()
@@ -121,10 +119,33 @@ def get_packages_by_family(
             pause()
             continue
 
-        show_package_details(
-            api_key,
-            tokens,
-            selected["code"],
-            is_enterprise,
-            option_order=selected["option_order"]
-        )
+        if return_package_detail:
+            variant_code = next((v["package_variant_code"] for v in data["package_variants"] if v["name"] == selected["variant_name"]), None)
+            detail = get_package_details(
+                api_key, tokens,
+                family_code,
+                variant_code,
+                selected["option_order"],
+                is_enterprise
+            )
+            if detail:
+                display_name = f"{data['package_family']['name']} - {selected['variant_name']} - {selected['option_name']}"
+                return detail, display_name
+            else:
+                print_panel("⚠️ Error", "Gagal mengambil detail paket.")
+                pause()
+                continue
+        else:
+            result = show_package_details(
+                api_key,
+                tokens,
+                selected["code"],
+                is_enterprise,
+                option_order=selected["option_order"]
+            )
+            if result == "MAIN":
+                return "MAIN"
+            elif result == "BACK":
+                continue
+            elif result is True:
+                continue
