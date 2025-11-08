@@ -210,12 +210,12 @@ class Auth:
                 if number_str.isdigit():
                     number = int(number_str)
                     self.set_active_user(number)
-
-	def edit_account_name(self, number: int, new_name: str):
-	    for user in self.refresh_tokens:
-	        if user["number"] == number:
-	            user["name"] = new_name
-	            break
-	    self.save_tokens()
+	
+    def edit_account_name(self, number: int, new_name: str):
+		for user in self.refresh_tokens:
+			if user["number"] == number:
+				user["name"] = new_name
+				break
+		self.save_tokens()
 
 AuthInstance = Auth()
