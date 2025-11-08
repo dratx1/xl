@@ -6,7 +6,7 @@ from rich.box import MINIMAL_DOUBLE_HEAD
 
 from app.client.ciam import get_otp, submit_otp
 from app.menus.util import clear_screen, pause, print_panel, nav_range
-from app.service.auth import AuthInstance
+from app.service.auth import AuthInstance, edit_account_name
 from app.config.theme_config import get_theme
 from app.service.service import load_status, save_status
 
