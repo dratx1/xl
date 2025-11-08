@@ -12,7 +12,7 @@ from app.menus.util import (
     clear_screen, pause, print_panel, print_error, print_warning, get_rupiah
 )
 from app.service.auth import AuthInstance
-from app.service.git import check_for_updates
+from app.service.git import check_for_updates, ensure_git
 from app.client.engsel import get_balance, get_tiering_info
 from app.client.famplan import validate_msisdn
 from app.client.registration import dukcapil
@@ -35,6 +35,7 @@ console = Console()
 
 def show_main_menu(profile):
     clear_screen()
+    ensure_git()
     expired_at_dt = datetime.fromtimestamp(profile.get("balance_expired_at", 0)).strftime("%Y-%m-%d")
     pulsa_str = get_rupiah(profile.get("balance", 0))
 
