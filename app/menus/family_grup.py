@@ -1,3 +1,4 @@
+
 import os
 import json
 from rich.console import Console
@@ -8,7 +9,8 @@ from rich.text import Text
 from rich.box import MINIMAL_DOUBLE_HEAD
 
 from app.menus.package import get_packages_by_family
-from app.menus.util import clear_screen, pause, print_panel, live_loading
+from app.menus.util import clear_screen, pause
+from app.menus.util_helper import print_panel, live_loading
 from app.config.theme_config import get_theme
 
 console = Console()
@@ -67,7 +69,7 @@ def edit_family_name(index, new_name):
         return True
     return False
 
-def show_family_grup_menu(return_package_detail: bool = False):
+def show_family_menu(return_package_detail: bool = False):
     while True:
         clear_screen()
         semua_kode = list_family_codes()
@@ -158,37 +160,28 @@ def show_family_grup_menu(return_package_detail: bool = False):
             pause()
 
         elif aksi == "00":
-            return (None, None) if return_package_detail else None
+            return None, None if return_package_detail else None
 
         elif aksi.isdigit():
             nomor = int(aksi)
             selected = next((p for p in packages if p["number"] == nomor), None)
             if selected:
                 try:
-                    result = get_packages_by_family(
-                        family_code=selected["code"],
-                        return_package_detail=return_package_detail
-                    )
-
+                    result = get_packages_by_family(selected["code"], return_package_detail=return_package_detail)
                     if return_package_detail:
                         if isinstance(result, tuple):
                             return result
                         elif result == "MAIN":
                             return "MAIN"
                         else:
-                            return (None, None)
-
+                            return None, None
                     if result == "MAIN":
                         return None
                     elif result == "BACK":
                         continue
-                    elif result is None:
-                        print_panel("⚠️ Info", "Tidak ada paket ditampilkan.")
                     pause()
-
                 except Exception as e:
-                    print_panel("❌ Error", f"Gagal menampilkan paket: {type(e).__name__} - {e}")
-                    pause()
+                    print_panel("❌ Error", f"Gagal menampilkan paket: {e}")
             else:
                 print_panel("❌ Error", "Nomor tidak valid.")
-                pause()
+            pause()
