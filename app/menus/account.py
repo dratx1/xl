@@ -144,7 +144,7 @@ def show_account_menu():
         nav_table.add_row("0", "Tambah akun")
         nav_table.add_row(nav_range("", len(users)), "Pilih nomor untuk berganti")
         nav_table.add_row(nav_range("edit", len(users)), "Ubah nama akun")
-        nav_table.add_row("del <Nomor>", f"[{theme['text_err']}]Hapus akun tersimpan[/]")
+        nav_table.add_row(nav_range("del", len(users)), f"[{theme['text_err']}]Hapus akun tersimpan[/]")
         nav_table.add_row("00", f"[{theme['text_sub']}]Kembali ke menu utama[/]")
 
         console.print(Panel(nav_table, border_style=theme["border_info"], expand=True))
