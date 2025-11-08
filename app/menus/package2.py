@@ -269,7 +269,7 @@ def fetch_my_packages():
         nav_table.add_column(style=theme["text_body"])
         nav_table.add_row("00", f"[{theme['text_sub']}]Kembali ke menu utama[/]")
         nav_table.add_row("Nomor", "Lihat detail paket")
-        nav_table.add_row("del <Nomor>", "Unsubscribe dari paket")
+        nav_table.add_row("del <Nomor>", f"[{theme['text_err']}]Unsubscribe dari paket[/]")
 
         console.print(Panel(
             nav_table,
