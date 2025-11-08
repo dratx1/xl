@@ -30,7 +30,7 @@ def ensure_git(strict=True):
         show_panel(
             "❌ Script ini hanya bisa dijalankan dari hasil git clone.",
             f"Pastikan Anda meng-clone dari repository resmi:\n  git clone {EXPECTED_URL}",
-            style="error"
+            style="info"
         )
         if strict: sys.exit(1)
         return False
@@ -83,7 +83,7 @@ def check_for_updates():
 
     return False
 
-def show_panel(title, body, style="error"):
+def show_panel(title, body, style="info"):
     border = get_theme_style(f"border_{style}")
     text = Text()
     for line in body.split("\n"):
