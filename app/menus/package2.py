@@ -1,15 +1,18 @@
-from rich.table import Table
+from rich.console import Console, Group
 from rich.panel import Panel
+from rich.table import Table
 from rich.text import Text
-from rich.console import Console
+from rich.align import Align
 from rich.box import MINIMAL_DOUBLE_HEAD
 from app.config.theme_config import get_theme
-from app.menus.util import clear_screen, pause, print_panel, get_rupiah
+from app.menus.util import clear_screen, pause, print_panel, get_rupiah, format_quota_byte
 from app.service.auth import AuthInstance
-from app.client.engsel import get_family, get_package_details
+from app.client.engsel import get_package, send_api_request
+from app.client.unsubscribe import unsubscribe
 from app.menus.package import show_package_details
 
 console = Console()
+
 
 def get_packages_by_family(
     family_code: str,
@@ -145,3 +148,176 @@ def get_packages_by_family(
                 continue
             elif result is True:
                 continue
+
+
+def fetch_my_packages():
+    theme = get_theme()
+    api_key = AuthInstance.api_key
+    tokens = AuthInstance.get_active_tokens()
+    if not tokens:
+        print_panel("❌ Error", "Token pengguna aktif tidak ditemukan.")
+        pause()
+        return "BACK"
+
+    id_token = tokens.get("id_token")
+    path = "api/v8/packages/quota-details"
+    payload = {
+        "is_enterprise": False,
+        "lang": "en",
+        "family_member_id": ""
+    }
+
+    with console.status("🔄 Mengambil paket aktif..."):
+        res = send_api_request(api_key, path, payload, id_token, "POST")
+
+    if res.get("status") != "SUCCESS":
+        print_panel("❌ Error", "Gagal mengambil paket aktif.")
+        pause()
+        return "BACK"
+
+    quotas = res["data"]["quotas"]
+    if not quotas:
+        print_panel("ℹ️ Info", "Tidak ada paket aktif ditemukan.")
+        pause()
+        return "BACK"
+
+    while True:
+        clear_screen()
+        console.print(Panel(
+            Align.center("📦 Paket Aktif Saya", vertical="middle"),
+            border_style=theme["border_info"],
+            padding=(1, 2),
+            expand=True
+        ))
+
+        my_packages = []
+        for num, quota in enumerate(quotas, start=1):
+            quota_code = quota["quota_code"]
+            group_code = quota["group_code"]
+            group_name = quota["group_name"]
+            quota_name = quota["name"]
+            family_code = "N/A"
+
+            product_subscription_type = quota.get("product_subscription_type", "")
+            product_domain = quota.get("product_domain", "")
+
+            benefits = quota.get("benefits", [])
+            benefit_table = None
+            if benefits:
+                benefit_table = Table(box=MINIMAL_DOUBLE_HEAD, expand=True)
+                benefit_table.add_column("Nama", style=theme["text_body"])
+                benefit_table.add_column("Jenis", style=theme["text_body"])
+                benefit_table.add_column("Kuota", style=theme["text_body"], justify="right")
+
+                for b in benefits:
+                    name = b.get("name", "")
+                    dt = b.get("data_type", "N/A")
+                    r = b.get("remaining", 0)
+                    t = b.get("total", 0)
+
+                    if dt == "DATA":
+                        r_str = format_quota_byte(r)
+                        t_str = format_quota_byte(t)
+                    elif dt == "VOICE":
+                        r_str = f"{r / 60:.2f} menit"
+                        t_str = f"{t / 60:.2f} menit"
+                    elif dt == "TEXT":
+                        r_str = f"{r} SMS"
+                        t_str = f"{t} SMS"
+                    else:
+                        r_str = str(r)
+                        t_str = str(t)
+
+                    benefit_table.add_row(name, dt, f"{r_str} / {t_str}")
+
+            with console.status(f"🔍 Memuat detail paket #{num}..."):
+                package_details = get_package(api_key, tokens, quota_code)
+            if package_details:
+                family_code = package_details["package_family"]["package_family_code"]
+
+            package_text = Text()
+            package_text.append(f"📦 Paket {num}\n", style="bold")
+            package_text.append("Nama: ", style=theme["border_info"])
+            package_text.append(f"{quota_name}\n", style=theme["text_sub"])
+            package_text.append("Quota Code: ", style=theme["border_info"])
+            package_text.append(f"{quota_code}\n", style=theme["text_body"])
+            package_text.append("Family Code: ", style=theme["border_info"])
+            package_text.append(f"{family_code}\n", style=theme["border_warning"])
+            package_text.append("Group Code: ", style=theme["border_info"])
+            package_text.append(f"{group_code}\n", style=theme["text_body"])
+
+            panel_content = [package_text]
+            if benefit_table:
+                panel_content.append(benefit_table)
+
+            console.print(Panel(
+                Group(*panel_content),
+                border_style=theme["border_primary"],
+                padding=(0, 1),
+                expand=True
+            ))
+
+            my_packages.append({
+                "number": num,
+                "name": quota_name,
+                "quota_code": quota_code,
+                "product_subscription_type": product_subscription_type,
+                "product_domain": product_domain,
+            })
+
+        nav_table = Table(show_header=False, box=MINIMAL_DOUBLE_HEAD, expand=True)
+        nav_table.add_column(justify="right", style=theme["text_key"], width=6)
+        nav_table.add_column(style=theme["text_body"])
+        nav_table.add_row("00", f"[{theme['text_sub']}]Kembali ke menu utama[/]")
+        nav_table.add_row("Nomor", "Lihat detail paket")
+        nav_table.add_row("del <Nomor>", "Unsubscribe dari paket")
+
+        console.print(Panel(
+            nav_table,
+            border_style=theme["border_info"],
+            padding=(0, 1),
+            expand=True
+        ))
+
+        choice = console.input(f"[{theme['text_sub']}]Pilihan:[/{theme['text_sub']}] ").strip()
+        if choice == "00":
+            return "BACK"
+
+        if choice.isdigit():
+            nomor = int(choice)
+            selected = next((p for p in my_packages if p["number"] == nomor), None)
+            if not selected:
+                print_panel("❌ Error", "Nomor paket tidak ditemukan.")
+                pause()
+                continue
+            show_package_details(api_key, tokens, selected["quota_code"], False)
+            continue
+
+        elif choice.startswith("del "):
+            parts = choice.split(" ")
+            if len(parts) != 2 or not parts[1].isdigit():
+                print_panel("❌ Error", "Format perintah hapus tidak valid.")
+                pause()
+                continue
+
+            nomor = int(parts[1])
+            selected = next((p for p in my_packages if p["number"] == nomor), None)
+            if not selected:
+                print_panel("❌ Error", "Nomor paket tidak ditemukan.")
+                pause()
+                continue
+
+            confirm = console.input(f"[{theme['text_sub']}]Yakin ingin unsubscribe dari paket {nomor}. {selected['name']}? (y/n):[/{theme['text_sub']}] ").strip().lower()
+            if confirm == "y":
+                with console.status("🔄 Menghapus paket..."):
+                    success = unsubscribe(
+                        api_key,
+                        tokens,
+                        selected["quota_code"],
+                        selected["product_subscription_type"],
+                        selected["product_domain"]
+                    )
+                print_panel("✅ Info" if success else "❌ Error", "Berhasil unsubscribe." if success else "Gagal unsubscribe.")
+            else:
+                print_panel("❎ Info", "Unsubscribe dibatalkan.")
+            pause()
