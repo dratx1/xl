@@ -175,7 +175,6 @@ def main():
 if __name__ == "__main__":
     try:
         try:
-            ensure_git()
             console.print(f"[bold {get_theme_style('text_sub')}]🔍 Checking for updates...[/]")
             if check_for_updates():
                 pause()
