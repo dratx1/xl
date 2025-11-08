@@ -9,8 +9,7 @@ from rich.text import Text
 from rich.box import MINIMAL_DOUBLE_HEAD
 
 from app.menus.package import get_packages_by_family
-from app.menus.util import clear_screen, pause
-from app.menus.util_helper import print_panel, live_loading
+from app.menus.util import clear_screen, pause, print_panel, live_loading
 from app.config.theme_config import get_theme
 
 console = Console()
