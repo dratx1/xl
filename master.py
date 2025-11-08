@@ -173,7 +173,7 @@ def main():
                 pause()
 
 if __name__ == "__main__":
-    #try:
+    try:
         #try:
         #    console.print(f"[bold {get_theme_style('text_sub')}]🔍 Checking for updates...[/]")
         #    if check_for_updates():
@@ -181,7 +181,7 @@ if __name__ == "__main__":
         #except Exception as e:
         #    print_warning("⚠️ Gagal cek update", str(e))
 
-        #main()
+        main()
 
     except KeyboardInterrupt:
         print_panel("👋 Keluar", "Aplikasi dihentikan oleh pengguna", border_style=get_theme_style("border_warning"))
