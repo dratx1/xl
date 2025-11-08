@@ -573,6 +573,20 @@ def show_package_details(api_key, tokens, package_option_code, is_enterprise, op
     pause()
     sys.exit(0)
 
+
+from rich.table import Table
+from rich.panel import Panel
+from rich.text import Text
+from rich.console import Console
+from rich.box import MINIMAL_DOUBLE_HEAD
+from app.config.theme_config import get_theme
+from app.menus.util import clear_screen, pause, print_panel
+from app.service.auth import AuthInstance
+from app.client.engsel import get_family
+from app.menus.package import show_package_details
+
+console = Console()
+
 def get_packages_by_family(
     family_code: str,
     is_enterprise: bool | None = None,
@@ -580,101 +594,115 @@ def get_packages_by_family(
 ):
     api_key = AuthInstance.api_key
     tokens = AuthInstance.get_active_tokens()
+    theme = get_theme()
+
     if not tokens:
-        print("No active user tokens found.")
+        print_panel("⚠️ Error", "Token pengguna aktif tidak ditemukan.")
         pause()
         return None
-    
-    packages = []
-    
-    data = get_family(
-        api_key,
-        tokens,
-        family_code,
-        is_enterprise,
-        migration_type
-    )
-    
+
+    data = get_family(api_key, tokens, family_code, is_enterprise, migration_type)
     if not data:
-        print("Failed to load family data.")
+        print_panel("⚠️ Error", "Gagal memuat data paket family.")
         pause()
         return None
+
     price_currency = "Rp"
-    rc_bonus_type = data["package_family"].get("rc_bonus_type", "")
-    if rc_bonus_type == "MYREWARDS":
+    if data["package_family"].get("rc_bonus_type") == "MYREWARDS":
         price_currency = "Poin"
-    
-    in_package_menu = True
-    while in_package_menu:
+
+    packages = []
+    while True:
         clear_screen()
-        # print(f"[GPBF-283]:\n{json.dumps(data, indent=2)}")
-        print("-------------------------------------------------------")        
-        print(f"Family Name: {data['package_family']['name']}")
-        print(f"Family Code: {family_code}")
-        print(f"Family Type: {data['package_family']['package_family_type']}")
-        # print(f"Enterprise: {'Yes' if is_enterprise else 'No'}")
-        print(f"Variant Count: {len(data['package_variants'])}")
-        print("-------------------------------------------------------")
-        print("Paket Tersedia")
-        print("-------------------------------------------------------")
-        
-        package_variants = data["package_variants"]
-        
+
+        # Panel info family
+        info_text = Text()
+        info_text.append("Nama: ", style=theme["text_body"])
+        info_text.append(f"{data['package_family']['name']}\n", style=theme["text_value"])
+        info_text.append("Kode: ", style=theme["text_body"])
+        info_text.append(f"{family_code}\n", style=theme["border_warning"])
+        info_text.append("Tipe: ", style=theme["text_body"])
+        info_text.append(f"{data['package_family']['package_family_type']}\n", style=theme["text_value"])
+        info_text.append("Jumlah Varian: ", style=theme["text_body"])
+        info_text.append(f"{len(data['package_variants'])}\n", style=theme["text_value"])
+
+        console.print(Panel(
+            info_text,
+            title=f"[{theme['text_title']}]📦 Info Paket Family[/]",
+            border_style=theme["border_info"],
+            padding=(0, 2),
+            expand=True
+        ))
+
+        # Tabel daftar paket
+        table = Table(box=MINIMAL_DOUBLE_HEAD, expand=True)
+        table.add_column("No", justify="right", style=theme["text_key"], width=4)
+        table.add_column("Varian", style=theme["text_body"])
+        table.add_column("Nama Paket", style=theme["text_body"])
+        table.add_column("Harga", style=theme["text_money"], justify="right")
+
         option_number = 1
-        variant_number = 1
-        
-        for variant in package_variants:
-            variant_name = variant["name"]
-            variant_code = variant["package_variant_code"]
-            print(f" Variant {variant_number}: {variant_name}")
-            print(f" Code: {variant_code}")
+        for variant in data["package_variants"]:
             for option in variant["package_options"]:
-                option_name = option["name"]
-                
                 packages.append({
                     "number": option_number,
-                    "variant_name": variant_name,
-                    "option_name": option_name,
+                    "variant_name": variant["name"],
+                    "option_name": option["name"],
                     "price": option["price"],
                     "code": option["package_option_code"],
                     "option_order": option["order"]
                 })
-                                
-                print(f"   {option_number}. {option_name} - {price_currency} {option['price']}")
-                
+                table.add_row(
+                    str(option_number),
+                    variant["name"],
+                    option["name"],
+                    f"{price_currency} {option['price']}"
+                )
                 option_number += 1
-            
-            if variant_number < len(package_variants):
-                print("-------------------------------------------------------")
-            variant_number += 1
-        print("-------------------------------------------------------")
 
-        print("00. Kembali ke menu utama")
-        print("-------------------------------------------------------")
-        pkg_choice = input("Pilih paket (nomor): ")
-        if pkg_choice == "00":
-            in_package_menu = False
+        console.print(Panel(
+            table,
+            border_style=theme["border_primary"],
+            padding=(0, 1),
+            expand=True
+        ))
+
+        # Navigasi
+        nav = Table(show_header=False, box=MINIMAL_DOUBLE_HEAD, expand=True)
+        nav.add_column(justify="right", style=theme["text_key"], width=6)
+        nav.add_column(style=theme["text_body"])
+        nav.add_row("00", f"[{theme['text_sub']}]Kembali ke menu utama[/]")
+
+        console.print(Panel(
+            nav,
+            border_style=theme["border_info"],
+            padding=(0, 1),
+            expand=True
+        ))
+
+        # Input
+        choice = console.input(f"[{theme['text_sub']}]Pilih paket (nomor):[/{theme['text_sub']}] ").strip()
+        if choice == "00":
             return None
-        
-        if isinstance(pkg_choice, str) == False or not pkg_choice.isdigit():
-            print("Input tidak valid. Silakan masukan nomor paket.")
+        if not choice.isdigit():
+            print_panel("⚠️ Error", "Input tidak valid. Masukkan nomor paket.")
+            pause()
             continue
-        
-        selected_pkg = next((p for p in packages if p["number"] == int(pkg_choice)), None)
-        
-        if not selected_pkg:
-            print("Paket tidak ditemukan. Silakan masukan nomor yang benar.")
+
+        selected = next((p for p in packages if p["number"] == int(choice)), None)
+        if not selected:
+            print_panel("⚠️ Error", "Nomor paket tidak ditemukan.")
+            pause()
             continue
-        
+
         show_package_details(
             api_key,
             tokens,
-            selected_pkg["code"],
+            selected["code"],
             is_enterprise,
-            option_order=selected_pkg["option_order"],
+            option_order=selected["option_order"]
         )
-        
-    return packages
+
 
 def fetch_my_packages():
     in_my_packages_menu = True
