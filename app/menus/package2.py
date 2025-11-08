@@ -252,7 +252,7 @@ def fetch_my_packages():
             console.print(Panel(
                 Group(*panel_content),
                 border_style=theme["border_primary"],
-                padding=(0, 1),
+                padding=(0, 0),
                 expand=True
             ))
 
