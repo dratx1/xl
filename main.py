@@ -76,7 +76,7 @@ def git_pull_rebase():
 
     if result["status"] == "success":
         text = Text.from_markup(
-            f"[bold {get_theme_style('text_sub')}]✅ Git pull berhasil[/]\n\n[{get_theme_style('text_body')}]{result['output']}[/]"
+            f"[bold {get_theme_style('text_date')}]✅ Git pull berhasil[/]\n\n[{get_theme_style('text_body')}]{result['output']}[/]"
         )
         console.print(Panel(
             text,
