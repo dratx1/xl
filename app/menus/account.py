@@ -120,6 +120,7 @@ def show_account_menu():
 
         account_table = Table(box=MINIMAL_DOUBLE_HEAD, expand=True)
         account_table.add_column("No", style=theme["text_key"], justify="right", width=4)
+        account_table.add_column("Nama", style=theme["text_body"])
         account_table.add_column("Nomor", style=theme["text_body"])
         account_table.add_column("Tipe", style=theme["text_body"])
         account_table.add_column("Status", style=theme["text_sub"], justify="center")
@@ -127,7 +128,12 @@ def show_account_menu():
         for idx, user in enumerate(users):
             is_active = active_user and user["number"] == active_user["number"]
             status = "✅ Aktif" if is_active else "-"
-            account_table.add_row(str(idx + 1), str(user["number"]), user.get("subscription_type", "-"), status)
+            account_table.add_row(
+                str(idx + 1),
+                str(user["number"]),
+                user.get("subscription_type", "-"),
+                status
+            )
 
         console.print(Panel(account_table, border_style=theme["border_primary"], expand=True))
 
@@ -136,6 +142,7 @@ def show_account_menu():
         nav_table.add_column(justify="left", style=theme["text_body"])
         nav_table.add_row("0", "Tambah akun")
         nav_table.add_row(nav_range("Nomor", len(users)), "Pilih akun aktif")
+        nav_table.add_row("edit <Nomor>", "Ubah nama akun")
         nav_table.add_row("del <Nomor>", f"[{theme['text_err']}]Hapus akun tersimpan[/]")
         nav_table.add_row("00", f"[{theme['text_sub']}]Kembali ke menu utama[/]")
 
@@ -153,6 +160,29 @@ def show_account_menu():
         elif input_str.isdigit() and 1 <= int(input_str) <= len(users):
             selected_user = users[int(input_str) - 1]
             return selected_user["number"]
+
+        elif input_str.startswith("edit "):
+            parts = input_str.split()
+            if len(parts) == 2 and parts[1].isdigit():
+                edit_index = int(parts[1])
+                if 1 <= edit_index <= len(users):
+                    user_to_edit = users[edit_index - 1]
+                    new_name = console.input(f"Masukkan nama baru untuk akun {user_to_edit['number']}: ").strip()
+                    if new_name:
+                        AuthInstance.edit_account_name(user_to_edit["number"], new_name)
+                        AuthInstance.load_tokens()
+                        users = AuthInstance.refresh_tokens
+                        active_user = AuthInstance.get_active_user()
+                        print_panel("✅ Info", f"Nama akun berhasil diubah menjadi: {new_name}")
+                    else:
+                        print_panel("⚠️ Error", "Nama tidak boleh kosong.")
+                    pause()
+                else:
+                    print_panel("⚠️ Error", "Nomor akun tidak valid.")
+                    pause()
+            else:
+                print_panel("⚠️ Error", "Format perintah tidak valid. Gunakan: edit <nomor>")
+                pause()
 
         elif input_str.startswith("del "):
             parts = input_str.split()
