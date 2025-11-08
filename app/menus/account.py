@@ -8,8 +8,7 @@ from app.client.ciam import get_otp, submit_otp
 from app.service.auth import AuthInstance
 from app.service.service import load_status, save_status
 from app.config.theme_config import get_theme
-from app.menus.util import pause
-from app.menus.util_helper import print_panel, clear_screen
+from app.menus.util import pause, print_panel, clear_screen
 
 console = Console()
 
