@@ -144,5 +144,6 @@ def run_main():
     master.main()
 
 if __name__ == "__main__":
+    ensure_git()
     git_pull_rebase()
     run_main()
