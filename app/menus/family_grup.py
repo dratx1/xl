@@ -111,7 +111,7 @@ def show_family_grup_menu(return_package_detail: bool = False):
         nav_table.add_row("T", "Tambah family code")
         nav_table.add_row("E", "Edit nama family code")
         nav_table.add_row("H", f"[{theme['text_err']}]Hapus family code[/]")
-        nav_table.add_row("00", f"[{theme['text_sub']}]Kembali ke menu awal[/]")
+        nav_table.add_row("00", f"[{theme['text_sub']}]Kembali ke menu sebelumnya[/]")
 
         console.print(Panel(nav_table, border_style=theme["border_info"], padding=(0, 1), expand=True))
 
