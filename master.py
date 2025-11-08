@@ -164,7 +164,7 @@ def main():
             case "00": show_bookmark_menu()
             case "88": show_theme_menu()
             case "99":
-                print_panel("👋 Sampai jumpa!", "Aplikasi ditutup", border_style=get_theme_style("border_error"))
+                print_panel("👋 Sampai jumpa!", "Aplikasi ditutup", border_style=get_theme_style("border_info"))
                 sys.exit(0)
             case "s":
                 enter_sentry_mode()
@@ -183,7 +183,7 @@ if __name__ == "__main__":
         main()
 
     except KeyboardInterrupt:
-        print_panel("👋 Keluar", "Aplikasi dihentikan oleh pengguna", border_style=get_theme_style("border_warning"))
+        print_panel("👋 Keluar", "Aplikasi dihentikan oleh pengguna", border_style=get_theme_style("border_info"))
         pause()
         sys.exit(0)
 
