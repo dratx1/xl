@@ -8,7 +8,7 @@ from app.client.ciam import get_otp, submit_otp
 from app.menus.util import clear_screen, pause, print_panel, nav_range
 from app.service.auth import AuthInstance
 from app.config.theme_config import get_theme
-from app.service.unlock import load_unlock_status, save_unlock_status
+from app.service.service import load_status, save_status
 
 console = Console()
 
@@ -74,7 +74,7 @@ def show_account_menu():
 
     max_accounts = 2
     unlock_code = "6969"
-    unlock_data = load_unlock_status()
+    unlock_data = load_status()
     is_unlocked = unlock_data.get("is_unlocked", False)
 
     in_account_menu = True
@@ -92,7 +92,7 @@ def show_account_menu():
                     pause()
                     add_user = False
                     continue
-                save_unlock_status(True)
+                save_status(True)
                 is_unlocked = True
                 print_panel("✅ Berhasil", "Akses akun tambahan telah dibuka.")
                 pause()
