@@ -85,7 +85,7 @@ def get_packages_by_family(
         console.print(Panel(
             table,
             border_style=theme["border_primary"],
-            padding=(0, 1),
+            padding=(0, 0),
             expand=True
         ))
 
