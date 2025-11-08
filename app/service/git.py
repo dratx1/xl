@@ -3,6 +3,8 @@ import subprocess
 import requests
 import xml.etree.ElementTree as ET
 
+from rich.text import Text
+
 OWNER = "dratx1"
 REPO  = "xl"
 BRANCH = "main"
