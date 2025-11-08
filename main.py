@@ -81,7 +81,7 @@ def git_pull_rebase():
         console.print(Panel(
             text,
             title=f"[{get_theme_style('text_sub')}]📥 Update CLI[/]",
-            border_style=get_theme_style("border_success"),
+            border_style=get_theme_style("border_info"),
             padding=(1, 2),
             expand=True
         ))
