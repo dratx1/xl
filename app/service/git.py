@@ -7,6 +7,7 @@ import xml.etree.ElementTree as ET
 from rich.console import Console
 from rich.panel import Panel
 from rich.text import Text
+from app.config.theme_config import get_theme_style
 
 console = Console()
 
@@ -29,7 +30,7 @@ def ensure_git(strict=True):
         show_panel(
             "❌ Script ini hanya bisa dijalankan dari hasil git clone.",
             f"Pastikan Anda meng-clone dari repository resmi:\n  git clone {EXPECTED_URL}",
-            style="red"
+            style="error"
         )
         if strict: sys.exit(1)
         return False
@@ -42,7 +43,7 @@ def ensure_git(strict=True):
         show_panel(
             "⚠️ Repo ini tidak berasal dari sumber resmi.",
             f"URL saat ini: {origin_url}\nSilakan clone ulang dari:\n  git clone {EXPECTED_URL}",
-            style="yellow"
+            style="warning"
         )
         if strict: sys.exit(1)
         return False
@@ -82,8 +83,12 @@ def check_for_updates():
 
     return False
 
-def show_panel(title, body, style="red"):
+def show_panel(title, body, style="error"):
+    border = get_theme_style(f"border_{style}")
     text = Text()
     for line in body.split("\n"):
-        text.append(line + "\n", style="yellow" if "http" not in line else "bold green")
-    console.print(Panel(text, title=title, border_style=style))
+        line_style = get_theme_style("text_body")
+        if "http" in line:
+            line_style = get_theme_style("text_link")
+        text.append(line + "\n", style=line_style)
+    console.print(Panel(text, title=title, border_style=border, expand=True))
