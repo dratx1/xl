@@ -36,7 +36,6 @@ console = Console()
 
 def show_main_menu(profile):
     clear_screen()
-    ensure_git()
     expired_at_dt = datetime.fromtimestamp(profile.get("balance_expired_at", 0)).strftime("%Y-%m-%d")
     pulsa_str = get_rupiah(profile.get("balance", 0))
 
@@ -73,7 +72,6 @@ def show_main_menu(profile):
         ("R", "📝 Register"),
         ("N", "🔔 Notifikasi"),
         ("V", "✅ Validate MSISDN"),
-        #("", ""),
         ("00", "⭐ Bookmark Paket"),
         ("88", f"[{get_theme_style('text_sub')}]🎨 Ganti Tema CLI [/]"),
         ("99", f"[{get_theme_style('text_err')}]⛔ Tutup Aplikasi [/]"),
@@ -86,6 +84,7 @@ def show_main_menu(profile):
 
 
 def main():
+    ensure_git()
     while True:
         active_user = AuthInstance.get_active_user()
         if not active_user:
@@ -173,20 +172,22 @@ def main():
                 print_warning("⚠️ Pilihan tidak valid", "Silakan pilih menu yang tersedia.")
                 pause()
 
+
 if __name__ == "__main__":
     try:
-        #try:
-        #    console.print(f"[bold {get_theme_style('text_sub')}]🔍 Checking for updates...[/]")
-        #    if check_for_updates():
-        #        pause()
-        #except Exception as e:
-        #    print_warning("⚠️ Gagal cek update", str(e))
+        # Optional: aktifkan update checker
+        # console.print(f"[bold {get_theme_style('text_sub')}]🔍 Checking for updates...[/]")
+        # if check_for_updates():
+        #     pause()
 
         main()
 
     except KeyboardInterrupt:
         print_panel("👋 Keluar", "Aplikasi dihentikan oleh pengguna", border_style=get_theme_style("border_warning"))
+        pause()
+        sys.exit(0)
 
     except Exception as e:
         print_error("⚠️ Error", f"{type(e).__name__} - {e}")
         pause()
+        sys.exit(1)
