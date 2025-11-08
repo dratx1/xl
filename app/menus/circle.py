@@ -1,6 +1,7 @@
 from datetime import datetime
 import json
-from app.menus.package import get_packages_by_family, show_package_details
+from app.menus.package import show_package_details
+from app.menus.package2 import get_packages_by_family
 from app.menus.util import pause, clear_screen, format_quota_byte
 from app.client.circle import (
     get_group_data,
