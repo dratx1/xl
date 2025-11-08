@@ -54,7 +54,7 @@ def show_main_menu(profile):
     menu_table.add_column("Menu", style=get_theme_style("text_body"))
 
     menu_items = [
-        ("1", "🔐 Login/Ganti akun"),
+        ("1", "🪪 Login/Ganti akun"),
         ("2", "📊 Lihat Paket Saya"),
         ("3", "🔥 Beli Paket Hot Promo"),
         ("4", "🔥 Beli Paket Hot Promo-2"),
@@ -62,7 +62,7 @@ def show_main_menu(profile):
         ("6", "💶 Beli Paket via Family Code"),
         ("7", "🔁 Beli Semua Paket di Family Code"),
         ("8", "📜 Riwayat Transaksi"),
-        ("9", "👨‍👩‍👧‍👦 Family Plan/Akrab Organizer"),
+        ("9", "☕ Family Plan/Akrab Organizer"),
         ("10", "🌀 Circle"),
         ("11", "🏪 Store Segments"),
         ("12", "📚 Store Family List"),
