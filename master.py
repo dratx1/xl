@@ -17,8 +17,8 @@ from app.client.engsel import get_balance, get_tiering_info
 from app.client.famplan import validate_msisdn
 from app.client.registration import dukcapil
 from app.menus.account import show_account_menu
-from app.menus.package import fetch_my_packages, show_package_details
-from app.menus.package2 import get_packages_by_family
+from app.menus.package import show_package_details
+from app.menus.package2 import get_packages_by_family, fetch_my_packages
 from app.menus.hot import show_hot_menu, show_hot_menu2
 from app.menus.purchase import purchase_by_family
 from app.menus.payment import show_transaction_history
