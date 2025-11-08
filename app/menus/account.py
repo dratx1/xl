@@ -50,7 +50,7 @@ def login_prompt(api_key: str):
                 continue
 
             print_panel("⏳ Info", "Memverifikasi OTP...")
-            tokens = submit_otp(api_key, phone_number, otp, subscriber_id)
+            tokens = submit_otp(api_key, "SMS", phone_number, otp, subscriber_id)
             if tokens:
                 print_panel("✅ Sukses", f"Berhasil login sebagai {phone_number}")
                 return phone_number, tokens["refresh_token"]
