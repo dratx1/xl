@@ -33,6 +33,7 @@ from app.service.sentry import enter_sentry_mode
 
 console = Console()
 
+
 def show_main_menu(profile):
     clear_screen()
     ensure_git()
@@ -72,7 +73,7 @@ def show_main_menu(profile):
         ("R", "📝 Register"),
         ("N", "🔔 Notifikasi"),
         ("V", "✅ Validate MSISDN"),
-        ("", ""),
+        #("", ""),
         ("00", "⭐ Bookmark Paket"),
         ("88", f"[{get_theme_style('text_sub')}]🎨 Ganti Tema CLI [/]"),
         ("99", f"[{get_theme_style('text_err')}]⛔ Tutup Aplikasi [/]"),
@@ -81,7 +82,7 @@ def show_main_menu(profile):
     for kode, label in menu_items:
         menu_table.add_row(kode, label)
 
-    console.print(Panel(menu_table, title="📋 Menu Utama", border_style=get_theme_style("border_primary"), expand=True))
+    console.print(Panel(menu_table, title="✨Menu Utama✨", border_style=get_theme_style("border_primary"), expand=True))
 
 
 def main():
