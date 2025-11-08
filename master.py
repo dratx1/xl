@@ -51,7 +51,7 @@ def show_main_menu(profile):
 
     console.print(Panel(
         info_table,
-        title=f"[{get_theme_style('text_sub')}]📱 Informasi Akun[/]",
+        title=f"[{get_theme_style('text_title')}]📱 Informasi Akun[/]",
         border_style=get_theme_style("border_info"),
         expand=True
     ))
@@ -90,7 +90,7 @@ def show_main_menu(profile):
 
     console.print(Panel(
         menu_table,
-        title=f"[{get_theme_style('text_sub')}]✨ Menu Utama ✨[/]",
+        title=f"[{get_theme_style('text_title')}]✨ Menu Utama ✨[/]",
         border_style=get_theme_style("border_primary"),
         expand=True
     ))
