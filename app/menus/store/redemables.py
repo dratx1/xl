@@ -1,7 +1,8 @@
 from app.client.store.redeemables import get_redeemables
 from app.service.auth import AuthInstance
 from app.menus.util import clear_screen, pause
-from app.menus.package import show_package_details, get_packages_by_family
+from app.menus.package import show_package_details
+from app.menus.package2 import get_packages_by_family
 
 from datetime import datetime
 
