@@ -72,10 +72,10 @@ def show_account_menu():
     users = AuthInstance.refresh_tokens
     active_user = AuthInstance.get_active_user()
 
-    max_accounts = 2
-    unlock_code = "6969"
-    unlock_data = load_status()
-    is_unlocked = unlock_data.get("is_unlocked", False)
+    sumit_otp = 2
+    verif_otp = "6969"
+    status_id = load_status()
+    is_verif = status_id.get("is_verif", False)
 
     in_account_menu = True
     add_user = False
@@ -84,16 +84,16 @@ def show_account_menu():
         clear_screen()
 
         if active_user is None or add_user:
-            if not is_unlocked and len(users) >= max_accounts:
+            if not is_verif and len(users) >= sumit_otp:
                 print_panel("🚫 Batas akun tercapai", "Masukkan kode unlock untuk menambah akun.")
-                unlock_input = console.input("Kode Unlock: ").strip()
-                if unlock_input != unlock_code:
+                verif_input = console.input("Kode Unlock: ").strip()
+                if verif_input != verif_otp:
                     print_panel("⚠️ Gagal", "Kode unlock salah. Tidak bisa menambah akun.")
                     pause()
                     add_user = False
                     continue
                 save_status(True)
-                is_unlocked = True
+                is_verif = True
                 print_panel("✅ Berhasil", "Akses akun tambahan telah dibuka.")
                 pause()
 
