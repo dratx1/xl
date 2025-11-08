@@ -67,7 +67,7 @@ def edit_family_name(index, new_name):
         return True
     return False
 
-def show_family_menu(return_package_detail: bool = False):
+def show_family_grup_menu(return_package_detail: bool = False):
     while True:
         clear_screen()
         semua_kode = list_family_codes()
