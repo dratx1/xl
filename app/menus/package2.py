@@ -49,7 +49,6 @@ def get_packages_by_family(
     while True:
         clear_screen()
 
-        # Panel info family
         info_text = Text()
         info_text.append("Nama: ", style=theme["text_body"])
         info_text.append(f"{data['package_family']['name']}\n", style=theme["text_value"])
@@ -68,7 +67,6 @@ def get_packages_by_family(
             expand=True
         ))
 
-        # Tabel daftar paket
         table = Table(box=MINIMAL_DOUBLE_HEAD, expand=True)
         table.add_column("No", justify="right", style=theme["text_key"], width=4)
         table.add_column("Varian", style=theme["text_body"])
@@ -91,11 +89,10 @@ def get_packages_by_family(
             expand=True
         ))
 
-        # Navigasi
         nav = Table(show_header=False, box=MINIMAL_DOUBLE_HEAD, expand=True)
         nav.add_column(justify="right", style=theme["text_key"], width=6)
         nav.add_column(style=theme["text_body"])
-        nav.add_row("00", f"[{theme['text_sub']}]Kembali ke menu utama[/]")
+        nav.add_row("00", f"[{theme['text_sub']}]Kembali ke menu sebelumnya[/]")
 
         console.print(Panel(
             nav,
@@ -104,7 +101,6 @@ def get_packages_by_family(
             expand=True
         ))
 
-        # Input
         choice = console.input(f"[{theme['text_sub']}]Pilih paket (nomor):[/{theme['text_sub']}] ").strip()
         if choice == "00":
             return "BACK"
