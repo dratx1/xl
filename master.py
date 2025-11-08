@@ -82,7 +82,7 @@ def show_main_menu(profile):
     for kode, label in menu_items:
         menu_table.add_row(kode, label)
 
-    console.print(Panel(menu_table, title="✨Menu Utama✨", border_style=get_theme_style("border_primary"), expand=True))
+    console.print(Panel(menu_table, title="✨ Menu Utama ✨", border_style=get_theme_style("border_primary"), expand=True))
 
 
 def main():
@@ -121,7 +121,7 @@ def main():
         }
 
         show_main_menu(profile)
-        choice = console.input(f"[{get_theme_style('text_sub')}]Pilih menu:[/{get_theme_style('text_sub')}] ").strip()
+        choice = console.input(f"[{get_theme_style('text_sub')}]✨Pilih menu🎯:[/{get_theme_style('text_sub')}] ").strip()
 
         match choice.lower():
             case "1": selected = show_account_menu(); AuthInstance.set_active_user(selected) if selected else pause()
