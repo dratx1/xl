@@ -43,7 +43,7 @@ def ensure_git(strict=True):
         show_panel(
             "⚠️ Repo ini tidak berasal dari sumber resmi.",
             f"URL saat ini: {origin_url}\nSilakan clone ulang dari:\n  git clone {EXPECTED_URL}",
-            style="warning"
+            style="info"
         )
         if strict: sys.exit(1)
         return False
