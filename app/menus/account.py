@@ -4,11 +4,12 @@ from rich.table import Table
 from rich.align import Align
 from rich.box import MINIMAL_DOUBLE_HEAD
 
-from app.client.ciam import get_otp, submit_otp
-from app.menus.util import clear_screen, pause, print_panel, nav_range
+from app.client.engsel import get_otp, submit_otp
 from app.service.auth import AuthInstance
-from app.config.theme_config import get_theme
 from app.service.service import load_status, save_status
+from app.config.theme_config import get_theme
+from app.menus.util import pause
+from app.menus.util_helper import print_panel, clear_screen
 
 console = Console()
 
@@ -41,26 +42,22 @@ def login_prompt(api_key: str):
             return None, None
 
         print_panel("✅ Info", "OTP berhasil dikirim ke nomor Anda.")
+        otp = console.input("Masukkan OTP (6 digit): ").strip()
 
-        for attempt in range(1, 6):
-            otp = console.input(f"Percobaan {attempt}/5 - Masukkan OTP (6 digit): ").strip()
-            if not otp.isdigit() or len(otp) != 6:
-                print_panel("⚠️ Error", "OTP tidak valid. Harus 6 digit angka.")
-                pause()
-                continue
+        if not otp.isdigit() or len(otp) != 6:
+            print_panel("⚠️ Error", "OTP tidak valid. Harus 6 digit angka.")
+            pause()
+            return None, None
 
-            print_panel("⏳ Info", "Memverifikasi OTP...")
-            tokens = submit_otp(api_key, phone_number, otp)
-            if tokens:
-                print_panel("✅ Sukses", f"Berhasil login sebagai {phone_number}")
-                return phone_number, tokens["refresh_token"]
-            else:
-                print_panel("⚠️ Error", "OTP salah atau kadaluarsa.")
-                pause()
+        print_panel("⏳ Info", "Memverifikasi OTP...")
+        tokens = submit_otp(api_key, phone_number, otp)
+        if not tokens:
+            print_panel("⚠️ Error", "Gagal login. Periksa OTP dan coba lagi.")
+            pause()
+            return None, None
 
-        print_panel("⛔ Gagal Login", "Percobaan OTP melebihi batas maksimum (5x).")
-        return None, None
-
+        print_panel("✅ Sukses", f"Berhasil login sebagai {phone_number}")
+        return phone_number, tokens["refresh_token"]
     except Exception as e:
         print_panel("⚠️ Error", f"Terjadi kesalahan: {e}")
         return None, None
@@ -83,6 +80,7 @@ def show_account_menu():
     while in_account_menu:
         clear_screen()
 
+        # Tambah akun jika belum ada atau diminta
         if active_user is None or add_user:
             if not is_unlocked and len(users) >= border_set:
                 print_panel("🚫 Batas akun tercapai", "Masukkan kode unlock untuk menambah akun.")
@@ -111,6 +109,7 @@ def show_account_menu():
             add_user = False
             continue
 
+        # Panel judul
         console.print(Panel(
             Align.center("📱 Akun Tersimpan", vertical="middle"),
             border_style=theme["border_info"],
@@ -118,7 +117,8 @@ def show_account_menu():
             expand=True
         ))
 
-        account_table = Table(box=MINIMAL_DOUBLE_HEAD, expand=True)
+        # Tabel akun
+        account_table = Table(show_header=True, box=MINIMAL_DOUBLE_HEAD, expand=True)
         account_table.add_column("No", style=theme["text_key"], justify="right", width=4)
         account_table.add_column("Nama", style=theme["text_body"])
         account_table.add_column("Nomor", style=theme["text_body"])
@@ -131,6 +131,7 @@ def show_account_menu():
 
         console.print(Panel(account_table, border_style=theme["border_primary"], expand=True))
 
+        # Navigasi
         nav_table = Table(show_header=False, box=MINIMAL_DOUBLE_HEAD, expand=True)
         nav_table.add_column(justify="right", style=theme["text_key"], width=6)
         nav_table.add_column(justify="left", style=theme["text_body"])
@@ -140,7 +141,7 @@ def show_account_menu():
         nav_table.add_row("00", f"[{theme['text_sub']}]Kembali ke menu utama[/]")
 
         console.print(Panel(nav_table, border_style=theme["border_info"], expand=True))
-        console.print(nav_range("Nomor", len(users)) + " → Pilih akun")
+        console.print(f"Masukkan nomor akun (1 - {len(users)}) untuk berganti.")
 
         input_str = console.input("Pilihan: ").strip()
 
@@ -157,7 +158,7 @@ def show_account_menu():
                 pause()
                 continue
 
-            nomor_input = console.input(nav_range("Edit", len(users)) + ": ").strip()
+            nomor_input = console.input(f"Nomor akun yang ingin diedit (1 - {len(users)}): ").strip()
             if nomor_input.isdigit():
                 nomor = int(nomor_input)
                 if 1 <= nomor <= len(users):
@@ -185,7 +186,7 @@ def show_account_menu():
                 pause()
                 continue
 
-            nomor_input = console.input(nav_range("Hapus", len(users)) + ": ").strip()
+            nomor_input = console.input(f"Nomor akun yang ingin dihapus (1 - {len(users)}): ").strip()
             if nomor_input.isdigit():
                 nomor = int(nomor_input)
                 if 1 <= nomor <= len(users):
@@ -199,7 +200,7 @@ def show_account_menu():
                         active_user = AuthInstance.get_active_user()
                         print_panel("✅ Info", f"Akun {selected_user['number']} berhasil dihapus.")
                     else:
-                        print_panel("Info", "Penghapusan akun dibatalkan.")
+                        print_panel("ℹ️ Info", "Penghapusan akun dibatalkan.")
                     pause()
                 else:
                     print_panel("⚠️ Error", "Nomor akun di luar jangkauan.")
