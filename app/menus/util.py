@@ -100,6 +100,13 @@ def get_rupiah(value) -> str:
     formatted = f"{formatted_number},-"
     return f"{formatted} {suffix}" if suffix else formatted
 
+def nav_range(label: str, count: int) -> str:
+    if count <= 0:
+        return f"{label} (tidak tersedia)"
+    if count == 1:
+        return f"{label} 1"
+    return f"{label} 1–{count}"
+
 def live_loading(text: str, theme: dict):
     return console.status(f"[{theme['text_sub']}]{text}[/{theme['text_sub']}]", spinner="dots")
 
