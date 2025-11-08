@@ -79,8 +79,8 @@ def show_main_menu(profile):
         ("N", "🔔 Notifikasi"),
         ("V", "✅ Validate MSISDN"),
         ("00", "⭐ Bookmark Paket"),
-        ("66", "💾 Simpan/Kelola Family Code")
-        ("77", f"[{get_theme_style('border_warning')}]📢 Info Unlock Code [/]") 
+        ("66", "💾 Simpan/Kelola Family Code"),
+        ("77", f"[{get_theme_style('border_warning')}]📢 Info Unlock Code [/]") ,
         ("88", f"[{get_theme_style('text_sub')}]🎨 Ganti Tema CLI [/]"),
         ("99", f"[{get_theme_style('text_err')}]⛔ Tutup Aplikasi [/]"),
     ]
