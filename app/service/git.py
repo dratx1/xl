@@ -1,13 +1,12 @@
-import os
-import sys
 import subprocess
 import requests
 import xml.etree.ElementTree as ET
 
+import os
+import sys
+import configparser
 from rich.console import Console
-from rich.table import Table
 from rich.panel import Panel
-from rich.align import Align
 from rich.text import Text
 
 console = Console()
