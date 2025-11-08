@@ -178,7 +178,7 @@ def show_family_grup_menu(return_package_detail: bool = False):
                         return None
                     elif result == "BACK":
                         continue
-                    pause()
+                    #pause()
                 except Exception as e:
                     print_panel("❌ Error", f"Gagal menampilkan paket: {e}")
             else:
