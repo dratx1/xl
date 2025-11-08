@@ -136,10 +136,10 @@ def git_pull_rebase():
         pause()
         sys.exit(1)
 
-def run_main():
-    import main
-    main.main()
+def run_master():
+    import master
+    master.master()
 
-if __name__ == "__main__":
+if __name__ == "__master__":
     git_pull_rebase()
-    run_main()
+    run_master()
