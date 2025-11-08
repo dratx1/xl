@@ -71,8 +71,8 @@ def show_main_menu(profile):
         ("R", "📝 Register"),
         ("N", "🔔 Notifikasi"),
         ("V", "✅ Validate MSISDN"),
-        ("00", "⭐ Bookmark Paket"),
         ("", ""),
+        ("00", "⭐ Bookmark Paket"),
         ("88", f"[{get_theme_style('text_sub')}]🎨 Ganti Tema CLI [/]"),
         ("99", f"[{get_theme_style('text_err')}]⛔ Tutup Aplikasi [/]"),
     ]
