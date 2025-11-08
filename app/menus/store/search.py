@@ -1,5 +1,6 @@
 from app.client.store.search import get_family_list, get_store_packages
-from app.menus.package import get_packages_by_family, show_package_details
+from app.menus.package import show_package_details
+from app.menus.package2 import get_packages_by_family
 from app.menus.util import clear_screen, pause
 from app.service.auth import AuthInstance
 
