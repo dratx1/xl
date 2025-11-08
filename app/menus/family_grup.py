@@ -158,28 +158,37 @@ def show_family_grup_menu(return_package_detail: bool = False):
             pause()
 
         elif aksi == "00":
-            return None, None if return_package_detail else None
+            return (None, None) if return_package_detail else None
 
         elif aksi.isdigit():
             nomor = int(aksi)
             selected = next((p for p in packages if p["number"] == nomor), None)
             if selected:
                 try:
-                    result = get_packages_by_family(selected["code"], return_package_detail=return_package_detail)
+                    result = get_packages_by_family(
+                        family_code=selected["code"],
+                        return_package_detail=return_package_detail
+                    )
+
                     if return_package_detail:
                         if isinstance(result, tuple):
                             return result
                         elif result == "MAIN":
                             return "MAIN"
                         else:
-                            return None, None
+                            return (None, None)
+
                     if result == "MAIN":
                         return None
                     elif result == "BACK":
                         continue
+                    elif result is None:
+                        print_panel("⚠️ Info", "Tidak ada paket ditampilkan.")
                     pause()
+
                 except Exception as e:
-                    print_panel("❌ Error", f"Gagal menampilkan paket: {e}")
+                    print_panel("❌ Error", f"Gagal menampilkan paket: {type(e).__name__} - {e}")
+                    pause()
             else:
                 print_panel("❌ Error", "Nomor tidak valid.")
-            pause()
+                pause()
