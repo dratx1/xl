@@ -49,12 +49,12 @@ def show_main_menu(profile):
     info_table.add_row("Tiering", f": {profile.get('point_info', '-')}")
 
     console.print(Panel(
-    info_table,
-    title="📱 Informasi Akun",
-    title_style=get_theme_style("text_sub"),
-    border_style=get_theme_style("border_info"),
-    expand=True
-))
+        info_table,
+        title="📱 Informasi Akun",
+        title_style=get_theme_style("text_sub"),
+        border_style=get_theme_style("border_info"),
+        expand=True
+    ))
 
     menu_table = Table(show_header=False, box=MINIMAL_DOUBLE_HEAD, expand=True)
     menu_table.add_column("Kode", justify="right", style=get_theme_style("text_key"), width=6)
