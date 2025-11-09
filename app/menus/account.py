@@ -119,7 +119,7 @@ def show_account_menu():
         ))
 
         account_table = Table(box=MINIMAL_DOUBLE_HEAD, expand=True)
-        account_table.add_column("No", style=theme["text_key"], justify="right", width=4)
+        account_table.add_column("No", style=theme["text_key"], justify="right", width=3)
         account_table.add_column("Nama", style=theme["text_body"])
         account_table.add_column("Nomor", style=theme["text_body"])
         account_table.add_column("Tipe", style=theme["text_body"])
@@ -136,7 +136,7 @@ def show_account_menu():
                 status
             )
 
-        console.print(Panel(account_table, border_style=theme["border_primary"], padding=(0, 0), expand=True))
+        console.print(Panel(account_table, border_style=theme["border_primary"], padding=(0, 1), expand=True))
 
         nav_table = Table(show_header=False, box=MINIMAL_DOUBLE_HEAD, expand=True)
         nav_table.add_column(justify="right", style=theme["text_key"], width=6)
