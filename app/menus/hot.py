@@ -8,6 +8,7 @@ from app.client.purchase.ewallet import show_multipayment
 from app.client.purchase.qris import show_qris_payment
 from app.client.purchase.balance import settlement_balance
 from app.type_dict import PaymentItem
+from app.config.theme_config import get_theme
 
 from rich.console import Console
 from rich.panel import Panel
@@ -22,61 +23,88 @@ WIDTH = 55
 def show_hot_menu():
     api_key = AuthInstance.api_key
     tokens = AuthInstance.get_active_tokens()
+    theme = get_theme()
 
-    in_hot_menu = True
-    while in_hot_menu:
-        clear_screen()
-        print("=" * WIDTH)
-        print("🔥 Paket Hot 🔥".center(WIDTH))
-        print("=" * WIDTH)
+    clear_screen()
+    console.print(Panel("🔥 Paket Hot 🔥", border_style=theme["border_info"], padding=(1, 2), expand=True))
 
-        try:
-            response = requests.get("https://me.mashu.lol/pg-hot.json", timeout=30)
-            response.raise_for_status()
-            hot_packages = response.json()
-        except Exception:
-            print_panel("⚠️ Error", "Gagal mengambil data hot package.")
-            pause()
-            return
+    try:
+        response = requests.get("https://me.mashu.lol/pg-hot.json", timeout=30)
+        response.raise_for_status()
+        hot_packages = response.json()
+    except Exception:
+        print_panel("⚠️ Error", "Gagal mengambil data hot package.")
+        pause()
+        return "BACK"
 
-        for idx, p in enumerate(hot_packages):
-            print(f"{idx + 1}. {p['family_name']} - {p['variant_name']} - {p['option_name']}")
-            print("-" * WIDTH)
+    table = Table(box=MINIMAL_DOUBLE_HEAD, expand=True)
+    table.add_column("No", justify="right", style=theme["text_key"], width=4)
+    table.add_column("Family", style=theme["text_body"])
+    table.add_column("Varian", style=theme["text_body"])
+    table.add_column("Opsi", style=theme["text_body"])
 
-        print("00. Kembali ke menu utama")
-        print("-" * WIDTH)
+    for idx, p in enumerate(hot_packages):
+        table.add_row(
+            str(idx + 1),
+            p["family_name"],
+            p["variant_name"],
+            p["option_name"]
+        )
 
-        choice = input("Pilih paket (nomor): ").strip()
+    console.print(Panel(table, border_style=theme["border_primary"], padding=(0, 1), expand=True))
+
+    nav = Table(show_header=False, box=MINIMAL_DOUBLE_HEAD, expand=True)
+    nav.add_column(justify="right", style=theme["text_key"], width=6)
+    nav.add_column(style=theme["text_body"])
+    nav.add_row("00", f"[{theme['text_sub']}]Kembali ke menu utama[/]")
+
+    console.print(Panel(nav, border_style=theme["border_info"], padding=(0, 1), expand=True))
+
+    while True:
+        choice = console.input(f"[{theme['text_sub']}]Pilih paket (nomor):[/{theme['text_sub']}] ").strip()
         if choice == "00":
-            in_hot_menu = False
-            return
+            return "MAIN"
+        if not choice.isdigit():
+            print_panel("⚠️ Error", "Input tidak valid. Masukkan nomor paket.")
+            pause()
+            continue
 
-        if choice.isdigit() and 1 <= int(choice) <= len(hot_packages):
-            selected = hot_packages[int(choice) - 1]
-            family_code = selected["family_code"]
-            is_enterprise = selected["is_enterprise"]
+        index = int(choice)
+        if not (1 <= index <= len(hot_packages)):
+            print_panel("⚠️ Error", "Nomor paket tidak ditemukan.")
+            pause()
+            continue
 
-            family_data = get_family(api_key, tokens, family_code, is_enterprise)
-            if not family_data:
-                print_panel("⚠️ Error", "Gagal mengambil data family.")
-                pause()
+        selected = hot_packages[index - 1]
+        family_code = selected["family_code"]
+        is_enterprise = selected["is_enterprise"]
+
+        family_data = get_family(api_key, tokens, family_code, is_enterprise)
+        if not family_data:
+            print_panel("⚠️ Error", "Gagal mengambil data family.")
+            pause()
+            continue
+
+        option_code = None
+        for variant in family_data["package_variants"]:
+            if variant["name"] == selected["variant_name"]:
+                for option in variant["package_options"]:
+                    if option["order"] == selected["order"]:
+                        option_code = option["package_option_code"]
+                        break
+
+        if option_code:
+            result = show_package_details(api_key, tokens, option_code, is_enterprise, option_order=selected["order"])
+            if result == "MAIN":
+                return "MAIN"
+            elif result == "BACK":
+                clear_screen()
                 continue
-
-            option_code = None
-            for variant in family_data["package_variants"]:
-                if variant["name"] == selected["variant_name"]:
-                    for option in variant["package_options"]:
-                        if option["order"] == selected["order"]:
-                            option_code = option["package_option_code"]
-                            break
-
-            if option_code:
-                show_package_details(api_key, tokens, option_code, is_enterprise)
-            else:
-                print_panel("⚠️ Error", "Paket tidak ditemukan.")
-                pause()
+            elif result is True:
+                clear_screen()
+                continue
         else:
-            print_panel("⚠️ Error", "Input tidak valid. Silakan coba lagi.")
+            print_panel("⚠️ Error", "Paket tidak ditemukan.")
             pause()
 
 def show_hot_menu2():
