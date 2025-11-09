@@ -13,6 +13,7 @@ from app.config.theme_config import get_theme
 from rich.console import Console
 from rich.panel import Panel
 from rich.table import Table
+from rich.align import Align
 from rich.box import MINIMAL_DOUBLE_HEAD
 
 
@@ -25,7 +26,12 @@ def show_hot_menu():
     theme = get_theme()
 
     clear_screen()
-    console.print(Panel("🔥 Paket Hot 🔥", border_style=theme["border_info"], padding=(1, 2), expand=True))
+    console.print(Panel(
+        Align.center("🔥 Paket Hot Promo 🔥", vertical="middle"),
+        border_style=theme["border_info"],
+        padding=(1, 2),
+        expand=True
+    ))
 
     try:
         response = requests.get("https://me.mashu.lol/pg-hot.json", timeout=30)
