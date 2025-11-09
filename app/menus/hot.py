@@ -42,6 +42,7 @@ def show_hot_menu():
         pause()
         return "BACK"
 
+    # Tampilkan tabel hanya sekali
     table = Table(box=MINIMAL_DOUBLE_HEAD, expand=True)
     table.add_column("No", justify="right", style=theme["text_key"], width=4)
     table.add_column("Family", style=theme["text_body"])
@@ -65,6 +66,7 @@ def show_hot_menu():
 
     console.print(Panel(nav, border_style=theme["border_info"], padding=(0, 1), expand=True))
 
+    # Loop input tanpa clear ulang
     while True:
         choice = console.input(f"[{theme['text_sub']}]Pilih paket (nomor):[/{theme['text_sub']}] ").strip()
         if choice == "00":
@@ -99,18 +101,21 @@ def show_hot_menu():
                         break
 
         if option_code:
-            result = show_package_details(api_key, tokens, option_code, is_enterprise, option_order=selected["order"])
+            result = show_package_details(
+                api_key,
+                tokens,
+                option_code,
+                is_enterprise,
+                option_order=selected["order"]
+            )
             if result == "MAIN":
                 return "MAIN"
-            elif result == "BACK":
-                clear_screen()
-                continue
-            elif result is True:
-                clear_screen()
+            elif result == "BACK" or result is True:
                 continue
         else:
             print_panel("⚠️ Error", "Paket tidak ditemukan.")
             pause()
+
 
 def show_hot_menu2():
     api_key = AuthInstance.api_key
