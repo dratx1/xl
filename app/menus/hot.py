@@ -26,7 +26,9 @@ def show_hot_menu():
     in_hot_menu = True
     while in_hot_menu:
         clear_screen()
-        console.print(Panel("🔥 Paket Hot 🔥", width=WIDTH, border_style="bold red", expand=False))
+        print("=" * WIDTH)
+        print("🔥 Paket Hot 🔥".center(WIDTH))
+        print("=" * WIDTH)
 
         try:
             response = requests.get("https://me.mashu.lol/pg-hot.json", timeout=30)
@@ -37,25 +39,14 @@ def show_hot_menu():
             pause()
             return
 
-        table = Table(box=MINIMAL_DOUBLE_HEAD, expand=True)
-        table.add_column("No", justify="right", style="bold")
-        table.add_column("Family", style="cyan")
-        table.add_column("Varian", style="green")
-        table.add_column("Opsi", style="magenta")
-
         for idx, p in enumerate(hot_packages):
-            table.add_row(
-                str(idx + 1),
-                p["family_name"],
-                p["variant_name"],
-                p["option_name"]
-            )
+            print(f"{idx + 1}. {p['family_name']} - {p['variant_name']} - {p['option_name']}")
+            print("-" * WIDTH)
 
-        console.print(table)
-        console.print("00. Kembali ke menu utama", style="dim")
-        console.print("-" * WIDTH)
+        print("00. Kembali ke menu utama")
+        print("-" * WIDTH)
 
-        choice = console.input("Pilih paket (nomor): ").strip()
+        choice = input("Pilih paket (nomor): ").strip()
         if choice == "00":
             in_hot_menu = False
             return
