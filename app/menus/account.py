@@ -141,77 +141,84 @@ def show_account_menu():
         nav_table = Table(show_header=False, box=MINIMAL_DOUBLE_HEAD, expand=True)
         nav_table.add_column(justify="right", style=theme["text_key"], width=6)
         nav_table.add_column(justify="left", style=theme["text_body"])
-        nav_table.add_row("0", "Tambah akun")
-        nav_table.add_row(nav_range("", len(users)), "Pilih nomor untuk berganti")
-        nav_table.add_row(nav_range("edit", len(users)), "Ubah nama akun")
-        nav_table.add_row(nav_range("del", len(users)), f"[{theme['text_err']}]Hapus akun tersimpan[/]")
+        nav_table.add_row("T", "Tambah akun")
+        nav_table.add_row("E", "Edit nama akun")
+        nav_table.add_row("H", f"[{theme['text_err']}]Hapus akun tersimpan[/]")
         nav_table.add_row("00", f"[{theme['text_sub']}]Kembali ke menu utama[/]")
-
+        
         console.print(Panel(nav_table, border_style=theme["border_info"], expand=True))
-
+        console.print(f"Masukkan nomor akun (1 - {len(users)}) untuk berganti.")
+        
         input_str = console.input("Pilihan: ").strip()
-
+        
         if input_str == "00":
             return active_user["number"] if active_user else None
-
-        elif input_str == "0":
+        
+        elif input_str.upper() == "T":
             add_user = True
             continue
-
-        elif input_str.isdigit() and 1 <= int(input_str) <= len(users):
-            selected_user = users[int(input_str) - 1]
-            return selected_user["number"]
-
-        elif input_str.startswith("edit "):
-            parts = input_str.split()
-            if len(parts) == 2 and parts[1].isdigit():
-                edit_index = int(parts[1])
-                if 1 <= edit_index <= len(users):
-                    user_to_edit = users[edit_index - 1]
-                    new_name = console.input(f"Masukkan nama baru untuk akun {user_to_edit['number']}: ").strip()
+        
+        elif input_str.upper() == "E":
+            if not users:
+                print_panel("⚠️ Error", "Tidak ada akun untuk diedit.")
+                pause()
+                continue
+        
+            nomor_input = console.input(f"Nomor akun yang ingin diedit (1 - {len(users)}): ").strip()
+            if nomor_input.isdigit():
+                nomor = int(nomor_input)
+                if 1 <= nomor <= len(users):
+                    selected_user = users[nomor - 1]
+                    new_name = console.input(f"Masukkan nama baru untuk akun {selected_user['number']}: ").strip()
                     if new_name:
-                        AuthInstance.edit_account_name(user_to_edit["number"], new_name)
+                        AuthInstance.edit_account_name(selected_user["number"], new_name)
                         AuthInstance.load_tokens()
                         users = AuthInstance.refresh_tokens
                         active_user = AuthInstance.get_active_user()
-                        print_panel("✅ Info", f"Nama akun berhasil diubah menjadi: {new_name}")
+                        print_panel("✅ Berhasil", f"Nama akun diubah menjadi '{new_name}'.")
                     else:
                         print_panel("⚠️ Error", "Nama tidak boleh kosong.")
                     pause()
                 else:
-                    print_panel("⚠️ Error", "Nomor akun tidak valid.")
+                    print_panel("⚠️ Error", "Nomor akun di luar jangkauan.")
                     pause()
             else:
-                print_panel("⚠️ Error", "Format perintah tidak valid. Gunakan: edit <nomor>")
+                print_panel("⚠️ Error", "Input tidak valid.")
                 pause()
-
-        elif input_str.startswith("del "):
-            parts = input_str.split()
-            if len(parts) == 2 and parts[1].isdigit():
-                del_index = int(parts[1])
-                if 1 <= del_index <= len(users):
-                    user_to_delete = users[del_index - 1]
-                    if active_user and user_to_delete["number"] == active_user["number"]:
-                        print_panel("⚠️ Error", "Tidak bisa hapus akun aktif. Ganti akun dulu.")
-                        pause()
-                        continue
-                    confirm = console.input(f"Yakin ingin menghapus akun {user_to_delete['number']}? (y/n): ").strip().lower()
+        
+        elif input_str.upper() == "H":
+            if not users:
+                print_panel("⚠️ Error", "Tidak ada akun untuk dihapus.")
+                pause()
+                continue
+        
+            nomor_input = console.input(f"Nomor akun yang ingin dihapus (1 - {len(users)}): ").strip()
+            if nomor_input.isdigit():
+                nomor = int(nomor_input)
+                if 1 <= nomor <= len(users):
+                    selected_user = users[nomor - 1]
+                    confirm = console.input(f"Yakin ingin menghapus akun {selected_user['number']}? (y/n): ").strip().lower()
                     if confirm == "y":
-                        AuthInstance.remove_refresh_token(user_to_delete["number"])
+                        print_panel("⏳ Info", f"Menghapus akun {selected_user['number']}...")
+                        AuthInstance.remove_refresh_token(selected_user["number"])
                         AuthInstance.load_tokens()
                         users = AuthInstance.refresh_tokens
                         active_user = AuthInstance.get_active_user()
-                        print_panel("✅ Info", f"Akun {user_to_delete['number']} berhasil dihapus.")
+                        print_panel("✅ Info", f"Akun {selected_user['number']} berhasil dihapus.")
                     else:
-                        print_panel("Info", "Penghapusan akun dibatalkan.")
+                        print_panel("ℹ️ Info", "Penghapusan akun dibatalkan.")
                     pause()
                 else:
-                    print_panel("⚠️ Error", "Nomor akun tidak valid.")
+                    print_panel("⚠️ Error", "Nomor akun di luar jangkauan.")
                     pause()
             else:
-                print_panel("⚠️ Error", "Format perintah tidak valid. Gunakan: del <nomor>")
+                print_panel("⚠️ Error", "Input tidak valid.")
                 pause()
-
+        
+        elif input_str.isdigit() and 1 <= int(input_str) <= len(users):
+            selected_user = users[int(input_str) - 1]
+            return selected_user["number"]
+        
         else:
             print_panel("⚠️ Error", "Input tidak valid. Silakan coba lagi.")
             pause()
