@@ -16,7 +16,6 @@ from rich.table import Table
 from rich.box import MINIMAL_DOUBLE_HEAD
 
 
-
 console = Console()
 WIDTH = 55
 
@@ -51,7 +50,7 @@ def show_hot_menu():
             p["option_name"]
         )
 
-    console.print(Panel(table, border_style=theme["border_primary"], padding=(0, 1), expand=True))
+    console.print(Panel(table, border_style=theme["border_primary"], padding=(0, 0), expand=True))
 
     nav = Table(show_header=False, box=MINIMAL_DOUBLE_HEAD, expand=True)
     nav.add_column(justify="right", style=theme["text_key"], width=6)
