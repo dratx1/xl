@@ -112,7 +112,7 @@ def show_account_menu():
             continue
 
         console.print(Panel(
-            Align.center("📱 Akun Tersimpan", vertical="middle"),
+            Align.center("👥 Akun Tersimpan", vertical="middle"),
             border_style=theme["border_info"],
             padding=(1, 2),
             expand=True
