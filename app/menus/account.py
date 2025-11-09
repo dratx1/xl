@@ -136,7 +136,7 @@ def show_account_menu():
                 status
             )
 
-        console.print(Panel(account_table, border_style=theme["border_primary"], expand=True))
+        console.print(Panel(account_table, border_style=theme["border_primary"], padding=(0, 0), expand=True))
 
         nav_table = Table(show_header=False, box=MINIMAL_DOUBLE_HEAD, expand=True)
         nav_table.add_column(justify="right", style=theme["text_key"], width=6)
