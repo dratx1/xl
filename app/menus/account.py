@@ -146,7 +146,7 @@ def show_account_menu():
         nav_table.add_row("H", f"[{theme['text_err']}]Hapus akun tersimpan[/]")
         nav_table.add_row("00", f"[{theme['text_sub']}]Kembali ke menu utama[/]")
         
-        console.print(Panel(nav_table, border_style=theme["border_info"], expand=True))
+        console.print(Panel(nav_table, border_style=theme["border_info"], padding=(0, 1), expand=True))
         console.print(f"Masukkan nomor akun (1 - {len(users)}) untuk berganti.")
         
         input_str = console.input("Pilihan: ").strip()
